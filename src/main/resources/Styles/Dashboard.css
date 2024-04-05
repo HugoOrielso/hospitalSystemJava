@@ -1,0 +1,41 @@
+.white-bg{
+    -fx-background-color:#FFF;
+}
+
+
+.radius{
+    -fx-background-radius:5px;
+}
+
+.shadow{
+    -fx-effect:dropshadow(three-pass-box,rgba(0,0,0,.5), 5,0,0,0);
+}
+
+.bg-color-1{
+    -fx-background-color: linear-gradient(to bottom right, #188ba7,#306090);
+}
+
+.btn-1{
+    -fx-background-color: transparent;
+    -fx-border-color:#fff;
+    -fx-border-width:1px;
+    -fx-text-fill:#fff;
+    -fx-font-family: Arial;
+    -fx-cursor:hand;
+    -fx-font-size:13px;
+}
+
+.btn-1:hover{
+    -fx-background-color:#fff;
+    -fx-text-fill:#000;
+}
+
+.border-top{
+    -fx-border-color:#000;
+    -fx-border-width:.5px 0 .4px 0;
+}
+
+.border-side{
+    -fx-border-color:#000;
+    -fx-border-width:0 .5px 0 .4px;
+}
