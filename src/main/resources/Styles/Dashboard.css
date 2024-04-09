@@ -1,8 +1,6 @@
 .white-bg{
     -fx-background-color:#FFF;
 }
-
-
 .radius{
     -fx-background-radius:5px;
 }
@@ -15,7 +13,7 @@
     -fx-background-color: linear-gradient(to bottom right, #188ba7,#306090);
 }
 
-.btn-1{
+.nav-btn-1{
     -fx-background-color: transparent;
     -fx-border-color:#fff;
     -fx-border-width:1px;
@@ -23,9 +21,10 @@
     -fx-font-family: Arial;
     -fx-cursor:hand;
     -fx-font-size:13px;
+    -fx-alignment: CENTER_LEFT;
 }
 
-.btn-1:hover{
+.nav-btn-1:hover{
     -fx-background-color:#fff;
     -fx-text-fill:#000;
 }
@@ -38,4 +37,32 @@
 .border-side{
     -fx-border-color:#000;
     -fx-border-width:0 .5px 0 .4px;
+}
+
+
+.header-1{
+    -fx-border-color: linear-gradient(to bottom right, #188ba7,#306090);
+    -fx-border-width: 0 0 0 2px;
+}
+
+.table-view{
+    -fx-padding: 0;
+    -fx-border-radius: 8px;
+    -fx-border-color: linear-gradient(to bottom right, #188ba7,#306090);
+}
+
+.table-view .column-header-background{
+    -fx-background-color: linear-gradient(to bottom right, #188ba7,#306090);
+    -fx-background-insets: 0;
+    -fx-background-radius: 8px 8px 0 0;
+}
+
+.table-view .column-header, .filter{
+    -fx-size: 40px;
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header .label{
+    -fx-font-family: Arial;
+    -fx-text-fill: #fff;
 }

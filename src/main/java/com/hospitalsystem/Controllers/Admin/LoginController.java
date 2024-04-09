@@ -145,6 +145,15 @@ public class LoginController implements Initializable {
                     resultSet = preparedStatement.executeQuery();
                     if (resultSet.next()){
                         alert.successMessagge("Login exitoso");
+                        Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));
+                        Stage stage = new Stage();
+                        stage.setTitle("Hospital Taliznay || Portal de aministración");
+                        stage.setScene(new Scene(root));
+                        stage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Imagenes/logo.jpg"))));
+                        stage.show();
+                        login_loginBtn.getScene().getWindow().hide();
+                    }else{
+                        alert.errorMessage("Correo o contraseña incorrectos");
                     }
                 }catch (Exception e){
                     e.printStackTrace();

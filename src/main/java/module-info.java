@@ -7,7 +7,6 @@ module hospital.hospitalsystem {
 
     opens com.hospitalsystem to javafx.fxml;
     exports com.hospitalsystem;
-    exports com.hospitalsystem.Views;
     exports com.hospitalsystem.Controllers.Admin;
     exports com.hospitalsystem.Controllers.Doctor;
     exports com.hospitalsystem.Controllers.Paciente;
