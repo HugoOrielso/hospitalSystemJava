@@ -19,6 +19,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
+import static com.hospitalsystem.Complementos.encryptPassword;
+
 public class RegisterController implements Initializable {
     public AnchorPane register_form;
     public TextField register_user;
@@ -40,6 +42,7 @@ public class RegisterController implements Initializable {
         register_singupBtn.setOnAction(event -> registerAccount());
         register_checkBox.setOnAction(event -> registerShowPassword());
     }
+
     public void toLogin(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Admin/Login.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -48,6 +51,7 @@ public class RegisterController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
+
     public void limpiarFormulario(){
         register_password.clear();
         register_email.clear();
@@ -59,6 +63,7 @@ public class RegisterController implements Initializable {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
     }
+
     public void registerShowPassword(){
         if(register_checkBox.isSelected()){
             register_showPassword.setText(register_password.getText());
@@ -70,13 +75,16 @@ public class RegisterController implements Initializable {
             register_password.setVisible(true);
         }
     }
+
     public void registerAccount(){
         if(register_email.getText().isEmpty() || register_user.getText().isEmpty() || register_password.getText().isEmpty()){
             alertMessage.errorMessage("Por favor llena todos los campos.");
+            return;
         }
         String checkUserName = "SELECT * FROM admin WHERE name = ?";
         connection = Database.connectionDB();
         try {
+
             if(!register_showPassword.isVisible()){
                 if(!register_showPassword.getText().equals(register_password.getText())){
                     register_showPassword.setText(register_password.getText());
@@ -89,24 +97,31 @@ public class RegisterController implements Initializable {
             preparedStatement = connection.prepareStatement(checkUserName);
             preparedStatement.setString(1, register_user.getText());
             resultSet = preparedStatement.executeQuery();
+
             if (resultSet.next()){
                 alertMessage.errorMessage("El usuario " + register_user.getText() + " ya existe.");
+                return;
             }
+
             if(register_password.getText().length() < 8){
                 alertMessage.errorMessage("La contraseña debe tener al menos 8 caracteres.");
+                return;
             }
-            if (isValidEmail(register_email.getText())){
-                String iserData = "INSERT INTO admin(email,name,password) VALUES (?,?,?);";
-                preparedStatement = connection.prepareStatement(iserData);
-                preparedStatement.setString(1, register_email.getText());
-                preparedStatement.setString(2, register_user.getText());
-                preparedStatement.setString(3, register_password.getText());
-                preparedStatement.executeUpdate();
-                alertMessage.successMessagge("Registro exitoso");
-                limpiarFormulario();
-            }else{
+
+            if (!isValidEmail(register_email.getText())){
                 alertMessage.errorMessage("Ingresa un email válido.");
+                return;
             }
+
+            String passwordEncrypted = encryptPassword(register_password.getText());
+            String iserData = "INSERT INTO admin(email,name,password) VALUES (?,?,?);";
+            preparedStatement = connection.prepareStatement(iserData);
+            preparedStatement.setString(1, register_email.getText());
+            preparedStatement.setString(2, register_user.getText());
+            preparedStatement.setString(3, passwordEncrypted);
+            preparedStatement.executeUpdate();
+            alertMessage.successMessagge("Registro exitoso");
+            limpiarFormulario();
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package com.hospitalsystem.Controllers.Doctor;
 import com.hospitalsystem.AlertMessage;
 import com.hospitalsystem.Complementos;
 import com.hospitalsystem.Controllers.Users;
+import com.hospitalsystem.Data;
 import com.hospitalsystem.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import static com.hospitalsystem.Complementos.*;
 
 public class LoginController implements Initializable {
     public AnchorPane login_form;
@@ -70,32 +71,43 @@ public class LoginController implements Initializable {
     }
 
     public void loginAccount(){
-        if(login_doctoremail.getText().isEmpty() || login_passwordDoctor.getText().isEmpty()){
+        if(login_doctoremail.getText().isEmpty() || login_passwordDoctor.getText().isEmpty()) {
             alertMessage.errorMessage("Completa todos los campos para continuar.");
-        }else {
-            String sql = "SELECT * FROM doctores WHERE email = ? AND password =?;";
-            connection = Database.connectionDB();
-            if (login_showPassword.isVisible()){
-                if (!login_showPassword.getText().equals(login_passwordDoctor)){
-                    login_showPassword.setText(login_passwordDoctor.getText());
-                }
-                login_passwordDoctor.setText(login_showPassword.getText());
-            }
-            try {
-                preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setString(1, login_doctoremail.getText());
-                preparedStatement.setString(2, login_passwordDoctor.getText());
-                resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()){
-                    DataDoctor.doctor_id = (resultSet.getString("doctor_id"));
-                    DataDoctor.doctor_userName = resultSet.getString("nombre_completo");
-                    alertMessage.successMessagge("Login exitoso");
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Doctor/DoctorMainForm.fxml"));
-                    Complementos.createStage(loader);
-                    Complementos.hideStage(login_loginBtnDoctor);
-                }
-            }catch (Exception e){ e.printStackTrace(); }
+            return;
         }
+        String sql = "SELECT * FROM doctores WHERE email = ?;";
+        connection = Database.connectionDB();
+        if (login_showPassword.isVisible()){
+            if (!login_showPassword.getText().equals(login_passwordDoctor)){
+                login_showPassword.setText(login_passwordDoctor.getText());
+            }
+            login_passwordDoctor.setText(login_showPassword.getText());
+        }
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, login_doctoremail.getText());
+            resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.next()){
+                alertMessage.errorMessage("El ususario no existe, por favor regístrate.");
+                return;
+            }
+
+            String passwordDesencriptada = decryptPassword(resultSet.getString("password"));
+
+            if(!passwordDesencriptada.equals(login_passwordDoctor.getText())){
+                alertMessage.errorMessage("Contraseña incorrecta.");
+                return;
+            }
+
+            Data.doctor_id = (resultSet.getString("doctor_id"));
+            Data.doctor_userName = resultSet.getString("nombre_completo");
+            alertMessage.successMessagge("Login exitoso");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Doctor/DoctorMainForm.fxml"));
+            createStage(loader);
+            hideStage(login_loginBtnDoctor);
+
+        }catch (Exception e){ e.printStackTrace(); }
     }
 
     public void toRegisterDoctor(ActionEvent event) throws IOException {

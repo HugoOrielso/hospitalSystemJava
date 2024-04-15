@@ -1,0 +1,20 @@
+USE hospital_system;
+CREATE TABLE citas(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    cita_id INT(50) NOT NULL,
+    paciente_id BIGINT,
+    name VARCHAR(100) NOT NULL,
+    genero VARCHAR(50) NOT NULL,
+    descripcion TEXT NOT NULL,
+    diagnostico TEXT NOT NULL,
+    tratamiento TEXT NOT NULL,
+    telefono VARCHAR(20),
+    direccion VARCHAR(150),
+    fecha_creacion DATE DEFAULT NOW(),
+    fecha_modificacion DATE,
+    fecha_eliminacion DATE,
+    estatus VARCHAR(50),
+    doctor VARCHAR(100),
+    especialidad VARCHAR(150),
+    calendario DATE
+);

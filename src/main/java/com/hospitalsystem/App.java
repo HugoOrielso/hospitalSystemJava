@@ -13,6 +13,7 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setMinHeight(550);
         stage.setMinWidth(330);
+        stage.setResizable(false);
         stage.setTitle("Hospital Taliznay");
         stage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Imagenes/logo.jpg"))));
         stage.show();

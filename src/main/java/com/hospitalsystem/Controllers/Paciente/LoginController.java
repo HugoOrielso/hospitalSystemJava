@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static com.hospitalsystem.Complementos.decryptPassword;
+import static com.hospitalsystem.Complementos.isValidEmail;
+
 public class LoginController implements Initializable {
 
     public AnchorPane main_form;
@@ -81,38 +84,47 @@ public class LoginController implements Initializable {
         }
     }
 
-
     public void loginAccount(){
-        if (login_emailPaciente.getText().isEmpty() || login_passwordPaciente.getText().isEmpty()){
+        if (login_emailPaciente.getText().isEmpty() || login_passwordPaciente.getText().isEmpty()) {
             alert.errorMessage("Completa todos los campos.");
-        }else{
-            if(Complementos.isValidEmail(login_emailPaciente.getText()) ){
-                String sql = "SELECT * FROM pacientes WHERE email = ? && password = ?;";
-                connection = Database.connectionDB();
-                try {
+            return;
+        }
 
-                    if(!login_showPassword.isVisible()){
-                        if (!login_showPassword.getText().equals(login_passwordPaciente.getText())){
-                            login_showPassword.setText(login_passwordPaciente.getText());
-                        }
-                    }else{
-                        if (!login_showPassword.getText().equals(login_passwordPaciente.getText())){
-                            login_passwordPaciente.setText(login_showPassword.getText());
-                        }
-                    }
-                    preparedStatement = connection.prepareStatement(sql);
-                    preparedStatement.setString(1,login_emailPaciente.getText());
-                    preparedStatement.setString(2,login_passwordPaciente.getText());
-                    resultSet = preparedStatement.executeQuery();
-                    if (resultSet.next()){
-                        alert.successMessagge("Login exitoso");
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
+        if(!isValidEmail(login_emailPaciente.getText()) ){
+            alert.errorMessage("Estructura de email incorrecta, ingresa un email válido");
+            return;
+        }
+
+        try {
+            String sql = "SELECT * FROM pacientes WHERE email = ?;";
+            connection = Database.connectionDB();
+            if(!login_showPassword.isVisible()){
+                if (!login_showPassword.getText().equals(login_passwordPaciente.getText())){
+                    login_showPassword.setText(login_passwordPaciente.getText());
                 }
             }else{
-                alert.errorMessage("Ingresa una dirección de correo válida.");
+                if (!login_showPassword.getText().equals(login_passwordPaciente.getText())){
+                    login_passwordPaciente.setText(login_showPassword.getText());
+                }
             }
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,login_emailPaciente.getText());
+            resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.next()){
+                alert.errorMessage("El usuario no existe en la base de datos.");
+                return;
+            }
+
+            String passwordDesencriptada = decryptPassword(resultSet.getString("password"));
+            if (!passwordDesencriptada.equals(login_showPassword.getText())){
+                alert.errorMessage("Contraseña incorrecta");
+                return;
+            }
+            alert.successMessagge("Login exitoso");
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

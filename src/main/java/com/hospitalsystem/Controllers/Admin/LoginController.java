@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import com.hospitalsystem.AlertMessage;
 import com.hospitalsystem.Complementos;
 import com.hospitalsystem.Controllers.Users;
+import com.hospitalsystem.Data;
 import com.hospitalsystem.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,9 +23,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import static com.hospitalsystem.Complementos.*;
 
 public class LoginController implements Initializable {
     public AnchorPane main_form;
@@ -85,41 +87,49 @@ public class LoginController implements Initializable {
     public void loginAccount(){
         if (login_email.getText().isEmpty() || login_password.getText().isEmpty()){
             alert.errorMessage("Completa todos los campos.");
-        }else{
-            if(Complementos.isValidEmail(login_email.getText()) ){
-                String sql = "SELECT * FROM admin WHERE email = ? && password = ?;";
-                connection = Database.connectionDB();
-                try {
+            return;
+        }
+        if(!Complementos.isValidEmail(login_email.getText())){
+            alert.errorMessage("Ingresa una dirección de correo válida.");
+            return;
+        }
 
-                    if(!login_showPassword.isVisible()){
-                        if (!login_showPassword.getText().equals(login_password.getText())){
-                            login_showPassword.setText(login_password.getText());
-                        }
-                    }else{
-                        if (!login_showPassword.getText().equals(login_password.getText())){
-                            login_password.setText(login_showPassword.getText());
-                        }
-                    }
-                    preparedStatement = connection.prepareStatement(sql);
-                    preparedStatement.setString(1,login_email.getText());
-                    preparedStatement.setString(2,login_password.getText());
-                    resultSet = preparedStatement.executeQuery();
-                    if (resultSet.next()){
-                        Data.admin_userName = resultSet.getString("name");
-                        Data.admin_id = resultSet.getInt("id");
-                        alert.successMessagge("Login exitoso");
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));
-                        Complementos.createStage(loader);
-                        Complementos.hideStage(login_loginBtn);
-                    }else{
-                        alert.errorMessage("Correo o contraseña incorrectos");
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
+        String sql = "SELECT * FROM admin WHERE email = ?;";
+        connection = Database.connectionDB();
+        try {
+            if(!login_showPassword.isVisible()){
+                if (!login_showPassword.getText().equals(login_password.getText())){
+                    login_showPassword.setText(login_password.getText());
                 }
             }else{
-                alert.errorMessage("Ingresa una dirección de correo válida.");
+                if (!login_showPassword.getText().equals(login_password.getText())){
+                    login_password.setText(login_showPassword.getText());
+                }
             }
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,login_email.getText());
+            resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()){
+                alert.errorMessage("El usuario no existe, o correo inválido");
+                return;
+            }
+
+            String passwordDesencriptada =  decryptPassword(resultSet.getString("password"));
+
+            if(!passwordDesencriptada.equals(login_password.getText())){
+                alert.errorMessage("Contraseña incorrecta.");
+                return;
+            }
+
+            Data.admin_userName = resultSet.getString("name");
+            Data.admin_id = resultSet.getInt("id");
+            alert.successMessagge("Login exitoso");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));
+            createStage(loader);
+            hideStage(login_loginBtn);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

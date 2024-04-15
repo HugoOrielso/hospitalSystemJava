@@ -42,7 +42,7 @@
             <Label layoutX="1026.0" layoutY="11.0" text="Activo" AnchorPane.rightAnchor="40.4" />
             <Circle fill="#1fff55" layoutX="1072.0" layoutY="20.0" radius="5.0" stroke="#05e311" strokeType="INSIDE" AnchorPane.rightAnchor="23.0" />
             <Label layoutX="798.0" layoutY="11.0" text="Hola, " AnchorPane.rightAnchor="233.60000000000005" />
-            <Label fx:id="top_adminName" layoutX="866.0" layoutY="10.0" text="Hugo" AnchorPane.rightAnchor="199.60000000000002">
+            <Label fx:id="top_adminName" layoutX="866.0" layoutY="10.0" prefHeight="19.0" prefWidth="102.0" text="Hugo" AnchorPane.rightAnchor="132.0">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
@@ -78,22 +78,22 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Button fx:id="dashboard_btn" layoutX="6.0" layoutY="188.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Panel">
+            <Button fx:id="dashboard_btn" layoutX="6.0" layoutY="188.0" mnemonicParsing="false" onAction="#swichtScene" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Panel">
                <graphic>
                   <FontAwesomeIconView glyphName="DASHBOARD" size="1.5EM" />
                </graphic>
             </Button>
-            <Button fx:id="doctores_btn" layoutX="6.0" layoutY="238.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Doctor">
+            <Button fx:id="doctores_btn" layoutX="6.0" layoutY="238.0" mnemonicParsing="false" onAction="#swichtScene" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Doctor">
                <graphic>
                   <FontAwesomeIconView glyphName="USER_MD" size="1.5EM" />
                </graphic>
             </Button>
-            <Button fx:id="pacientes_btn" layoutX="6.0" layoutY="287.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Paciente">
+            <Button fx:id="pacientes_btn" layoutX="6.0" layoutY="287.0" mnemonicParsing="false" onAction="#swichtScene" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Paciente">
                <graphic>
                   <FontAwesomeIconView glyphName="USER" size="1.5EM" />
                </graphic>
             </Button>
-            <Button fx:id="citas_btn" layoutX="6.0" layoutY="337.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Cita">
+            <Button fx:id="citas_btn" layoutX="6.0" layoutY="337.0" mnemonicParsing="false" onAction="#swichtScene" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Cita">
                <graphic>
                   <FontAwesomeIconView glyphName="CLIPBOARD" size="1.5EM" />
                </graphic>

@@ -1,6 +1,7 @@
 package com.hospitalsystem.Controllers.Admin;
 
-import javafx.application.Platform;
+import com.hospitalsystem.Data;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
@@ -10,11 +11,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
-
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.ResourceBundle;
+import static com.hospitalsystem.Complementos.runTime;
+
 public class DashboardController implements Initializable {
     public Circle top_profile;
     public Label top_adminName;
@@ -72,56 +72,40 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        dashboard_btn.setOnAction(event -> swichtScene("dashboard"));
-        citas_btn.setOnAction(event -> swichtScene("citas"));
-        doctores_btn.setOnAction(event -> swichtScene("doctores"));
-        pacientes_btn.setOnAction(event -> swichtScene("pacientes"));
-        runTime();
+        runTime(data_time);
         displayAdminData();
     }
 
-    public void swichtScene(String toScene){
-        if (toScene.equals("dashboard")){
+    public void swichtScene(ActionEvent actionEvent){
+        if (actionEvent.getSource() == dashboard_btn){
             doctores_form.setVisible(false);
             pacientes_form.setVisible(false);
             citas_form.setVisible(false);
             dashboard_form.setVisible(true);
-        }else if (toScene.equals("doctores")){
+        }else if (actionEvent.getSource() == doctores_btn){
             doctores_form.setVisible(true);
             pacientes_form.setVisible(false);
             citas_form.setVisible(false);
             dashboard_form.setVisible(false);
-        }else if (toScene.equals("pacientes")){
+        }else if (actionEvent.getSource() == pacientes_btn){
             doctores_form.setVisible(false);
             pacientes_form.setVisible(true);
             citas_form.setVisible(false);
             dashboard_form.setVisible(false);
-        }else if (toScene.equals("citas")){
+        }else if (actionEvent.getSource() == citas_btn){
             doctores_form.setVisible(false);
             pacientes_form.setVisible(false);
             citas_form.setVisible(true);
             dashboard_form.setVisible(false);
         }
     }
+
     public void displayAdminData(){
         nav_adminName.setText(Data.admin_userName);
         top_adminName.setText(Data.admin_userName);
         nav_adminID.setText(String.valueOf(Data.admin_id));
     }
 
-    public void runTime(){
-        new Thread(){
-        public void run(){
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
-            while(true){
-            try {
-                    Thread.sleep(1000);
-            }catch (Exception e){e.printStackTrace();}
-            Platform.runLater(() -> {
-                data_time.setText((format.format(new Date())));
-            });
-        }}
-        }.start();
-    }
+
 
 }
