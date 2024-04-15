@@ -1,4 +1,6 @@
 package com.hospitalsystem.Controllers.Admin;
+
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
@@ -10,6 +12,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 public class DashboardController implements Initializable {
     public Circle top_profile;
@@ -72,6 +76,8 @@ public class DashboardController implements Initializable {
         citas_btn.setOnAction(event -> swichtScene("citas"));
         doctores_btn.setOnAction(event -> swichtScene("doctores"));
         pacientes_btn.setOnAction(event -> swichtScene("pacientes"));
+        runTime();
+        displayAdminData();
     }
 
     public void swichtScene(String toScene){
@@ -97,6 +103,25 @@ public class DashboardController implements Initializable {
             dashboard_form.setVisible(false);
         }
     }
+    public void displayAdminData(){
+        nav_adminName.setText(Data.admin_userName);
+        top_adminName.setText(Data.admin_userName);
+        nav_adminID.setText(String.valueOf(Data.admin_id));
+    }
+
+    public void runTime(){
+        new Thread(){
+        public void run(){
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
+            while(true){
+            try {
+                    Thread.sleep(1000);
+            }catch (Exception e){e.printStackTrace();}
+            Platform.runLater(() -> {
+                data_time.setText((format.format(new Date())));
+            });
+        }}
+        }.start();
+    }
+
 }
-
-

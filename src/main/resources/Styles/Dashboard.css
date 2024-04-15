@@ -13,6 +13,10 @@
     -fx-background-color: linear-gradient(to bottom right, #188ba7,#306090);
 }
 
+.bg-color-2{
+    -fx-background-color: linear-gradient(to bottom right, #a413a1,#64308e);
+}
+
 .nav-btn-1{
     -fx-background-color: transparent;
     -fx-border-color:#fff;
@@ -25,6 +29,22 @@
 }
 
 .nav-btn-1:hover{
+    -fx-background-color:#fff;
+    -fx-text-fill:#000;
+}
+
+.nav-btn-2{
+    -fx-background-color: transparent;
+    -fx-border-color:#fff;
+    -fx-border-width:1px;
+    -fx-text-fill:#fff;
+    -fx-font-family: Arial;
+    -fx-cursor:hand;
+    -fx-font-size:13px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-btn-2:hover{
     -fx-background-color:#fff;
     -fx-text-fill:#000;
 }
@@ -43,6 +63,13 @@
 .header-1{
     -fx-border-color: linear-gradient(to bottom right, #188ba7,#306090);
     -fx-border-width: 0 0 0 2px;
+    -fx-padding: 0 0 0 5px;
+}
+
+.header-2{
+    -fx-border-color: linear-gradient(to bottom right, #a413a1,#64308e);
+    -fx-border-width: 0 0 0 2px;
+    -fx-padding: 0 0 0 5px;
 }
 
 .table-view{

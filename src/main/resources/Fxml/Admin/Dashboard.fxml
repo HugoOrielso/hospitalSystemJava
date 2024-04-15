@@ -260,7 +260,7 @@
                   </AnchorPane>
                </AnchorPane>
             </AnchorPane>
-            <AnchorPane fx:id="doctores_form" layoutX="8.8" prefHeight="560.0" prefWidth="876.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane fx:id="doctores_form" layoutX="8.8" prefHeight="560.0" prefWidth="876.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <AnchorPane layoutX="7.0" layoutY="8.0" prefHeight="544.0" prefWidth="870.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="7.199999999999932" AnchorPane.topAnchor="8.0">
                   <styleClass>
                      <String fx:value="shadow" />

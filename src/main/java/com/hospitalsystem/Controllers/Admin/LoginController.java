@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import com.hospitalsystem.AlertMessage;
+import com.hospitalsystem.Complementos;
 import com.hospitalsystem.Controllers.Users;
 import com.hospitalsystem.Database;
 import javafx.collections.FXCollections;
@@ -48,9 +49,10 @@ public class LoginController implements Initializable {
         // TODO Auto-generated method stub
         login_loginBtn.setOnAction(event -> loginAccount());
         chechBox_password.setOnAction(event -> showLoginPassword());
-        login_selectUser.setOnAction(event -> switchPages());
+        login_selectUser.setOnAction(event -> Complementos.switchPages(login_selectUser));
         userList();
     }
+
     public void toRegister(ActionEvent event) throws IOException{
         Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Admin/Register.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -68,44 +70,6 @@ public class LoginController implements Initializable {
         login_selectUser.setItems(listData);
     }
 
-    public void switchPages(){
-        if (login_selectUser.getSelectionModel().getSelectedItem() == "Administrador"){
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Admin/Login.fxml"));
-                Stage stage = new Stage();
-                stage.setTitle("Hospital Taliznay");
-                stage.setMinWidth(340);
-                stage.setMinHeight(580);
-                stage.setScene(new Scene(root));
-                stage.show();
-            }catch (Exception e){ e.printStackTrace(); }
-        }
-        if (login_selectUser.getSelectionModel().getSelectedItem() == "Doctor"){
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Doctor/Login.fxml"));
-                Stage stage = new Stage();
-                stage.setTitle("Hospital Taliznay");
-                stage.setMinWidth(340);
-                stage.setMinHeight(580);
-                stage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Imagenes/logo.jpg"))));
-                stage.setScene(new Scene(root));
-                stage.show();
-            }catch (Exception e){ e.printStackTrace(); }
-        }
-        if (login_selectUser.getSelectionModel().getSelectedItem() == "Paciente"){
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Paciente/Login.fxml"));
-                Stage stage = new Stage();
-                stage.setTitle("Hospital Taliznay");
-                stage.setMinWidth(340);
-                stage.setMinHeight(580);
-                stage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Imagenes/logo.jpg"))));
-                stage.setScene(new Scene(root));
-                stage.show();
-            }catch (Exception e){ e.printStackTrace(); }
-        }
-        login_selectUser.getScene().getWindow().hide();
-    }
     public void showLoginPassword(){
         if(chechBox_password.isSelected()){
             login_showPassword.setText(login_password.getText());
@@ -117,15 +81,12 @@ public class LoginController implements Initializable {
             login_showPassword.setVisible(false);
         }
     }
-    public boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        return email.matches(emailRegex);
-    }
+
     public void loginAccount(){
         if (login_email.getText().isEmpty() || login_password.getText().isEmpty()){
             alert.errorMessage("Completa todos los campos.");
         }else{
-            if(isValidEmail(login_email.getText()) ){
+            if(Complementos.isValidEmail(login_email.getText()) ){
                 String sql = "SELECT * FROM admin WHERE email = ? && password = ?;";
                 connection = Database.connectionDB();
                 try {
@@ -144,14 +105,12 @@ public class LoginController implements Initializable {
                     preparedStatement.setString(2,login_password.getText());
                     resultSet = preparedStatement.executeQuery();
                     if (resultSet.next()){
+                        Data.admin_userName = resultSet.getString("name");
+                        Data.admin_id = resultSet.getInt("id");
                         alert.successMessagge("Login exitoso");
-                        Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));
-                        Stage stage = new Stage();
-                        stage.setTitle("Hospital Taliznay || Portal de aministración");
-                        stage.setScene(new Scene(root));
-                        stage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Imagenes/logo.jpg"))));
-                        stage.show();
-                        login_loginBtn.getScene().getWindow().hide();
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));
+                        Complementos.createStage(loader);
+                        Complementos.hideStage(login_loginBtn);
                     }else{
                         alert.errorMessage("Correo o contraseña incorrectos");
                     }
