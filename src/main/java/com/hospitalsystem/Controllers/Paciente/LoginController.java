@@ -1,9 +1,9 @@
 package com.hospitalsystem.Controllers.Paciente;
 
-import com.hospitalsystem.AlertMessage;
-import com.hospitalsystem.Complementos;
-import com.hospitalsystem.Controllers.Users;
-import com.hospitalsystem.Database;
+import com.hospitalsystem.Controllers.Utils.AlertMessage;
+import com.hospitalsystem.Controllers.Utils.Complementos;
+import com.hospitalsystem.Controllers.Utils.Users;
+import com.hospitalsystem.Controllers.Utils.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,7 +13,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -26,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static com.hospitalsystem.Complementos.decryptPassword;
-import static com.hospitalsystem.Complementos.isValidEmail;
+import static com.hospitalsystem.Controllers.Utils.Complementos.decryptPassword;
+import static com.hospitalsystem.Controllers.Utils.Complementos.isValidEmail;
 
 public class LoginController implements Initializable {
 
@@ -46,23 +45,14 @@ public class LoginController implements Initializable {
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private AlertMessage alert = new AlertMessage();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         login_selectUserPaciente.setOnAction(event -> Complementos.switchPages(login_selectUserPaciente));
         login_loginBtn.setOnAction(event -> loginAccount());
         chechBox_password.setOnAction(event -> showPassword());
-        userList();
+        Complementos.userList(login_selectUserPaciente);
     }
-
-    public void userList(){
-        List<String> ListU = new ArrayList<>();
-        for (String data : Users.users){
-            ListU.add(data);
-        }
-        ObservableList listData = FXCollections.observableList(ListU);
-        login_selectUserPaciente.setItems(listData);
-    }
-
 
     public void toRegister(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Paciente/Register.fxml"));

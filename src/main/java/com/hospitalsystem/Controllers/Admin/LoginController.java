@@ -8,12 +8,11 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import com.hospitalsystem.AlertMessage;
-import com.hospitalsystem.Complementos;
-import com.hospitalsystem.Controllers.Users;
-import com.hospitalsystem.Data;
-import com.hospitalsystem.Database;
+import com.hospitalsystem.Controllers.Utils.AlertMessage;
+import com.hospitalsystem.Controllers.Utils.Complementos;
+import com.hospitalsystem.Controllers.Utils.Users;
+import com.hospitalsystem.Controllers.Utils.Data;
+import com.hospitalsystem.Controllers.Utils.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,8 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
-import static com.hospitalsystem.Complementos.*;
+import static com.hospitalsystem.Controllers.Utils.Complementos.*;
 
 public class LoginController implements Initializable {
     public AnchorPane main_form;
@@ -45,14 +43,13 @@ public class LoginController implements Initializable {
     private PreparedStatement preparedStatement;
     private AlertMessage alert = new AlertMessage();
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // TODO Auto-generated method stub
         login_loginBtn.setOnAction(event -> loginAccount());
         chechBox_password.setOnAction(event -> showLoginPassword());
         login_selectUser.setOnAction(event -> Complementos.switchPages(login_selectUser));
-        userList();
+        Complementos.userList(login_selectUser);
     }
 
     public void toRegister(ActionEvent event) throws IOException{
@@ -61,15 +58,6 @@ public class LoginController implements Initializable {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
-    }
-
-    public void userList(){
-        List<String> ListU = new ArrayList<>();
-        for (String data : Users.users){
-            ListU.add(data);
-        }
-        ObservableList listData = FXCollections.observableList(ListU);
-        login_selectUser.setItems(listData);
     }
 
     public void showLoginPassword(){
@@ -114,9 +102,7 @@ public class LoginController implements Initializable {
                 alert.errorMessage("El usuario no existe, o correo inválido");
                 return;
             }
-
             String passwordDesencriptada =  decryptPassword(resultSet.getString("password"));
-
             if(!passwordDesencriptada.equals(login_password.getText())){
                 alert.errorMessage("Contraseña incorrecta.");
                 return;

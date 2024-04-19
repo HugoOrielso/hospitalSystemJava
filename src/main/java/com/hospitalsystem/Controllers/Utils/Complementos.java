@@ -1,6 +1,8 @@
-package com.hospitalsystem;
+package com.hospitalsystem.Controllers.Utils;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,10 +11,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
 
 public class Complementos {
+
     public static String reduceUUID(String uuid){
         String[] ids = uuid.split("-");
         return ids[0];
@@ -105,8 +107,16 @@ public class Complementos {
                     Platform.runLater(() -> {
                         labelTime.setText((format.format(new Date())));
                     });
-                }}
+                }
+            }
         }.start();
+    }
+
+    public static void userList(ComboBox userList){
+        List<String> ListU = new ArrayList<>();
+        Collections.addAll(ListU, Users.users);
+        ObservableList<String> listData = FXCollections.observableList(ListU);
+        userList.setItems(listData);
     }
 
 }

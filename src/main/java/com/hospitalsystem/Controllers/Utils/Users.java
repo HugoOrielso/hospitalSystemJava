@@ -1,4 +1,4 @@
-package com.hospitalsystem.Controllers;
+package com.hospitalsystem.Controllers.Utils;
 
 
 public class Users {

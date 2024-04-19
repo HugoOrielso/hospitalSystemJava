@@ -1,10 +1,10 @@
 package com.hospitalsystem.Controllers.Doctor;
 
-import com.hospitalsystem.AlertMessage;
-import com.hospitalsystem.Complementos;
-import com.hospitalsystem.Controllers.Users;
-import com.hospitalsystem.Data;
-import com.hospitalsystem.Database;
+import com.hospitalsystem.Controllers.Utils.AlertMessage;
+import com.hospitalsystem.Controllers.Utils.Complementos;
+import com.hospitalsystem.Controllers.Utils.Users;
+import com.hospitalsystem.Controllers.Utils.Data;
+import com.hospitalsystem.Controllers.Utils.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import static com.hospitalsystem.Complementos.*;
+import static com.hospitalsystem.Controllers.Utils.Complementos.*;
 
 public class LoginController implements Initializable {
     public AnchorPane login_form;
@@ -37,7 +37,7 @@ public class LoginController implements Initializable {
     public PasswordField login_passwordDoctor;
     public TextField login_doctoremail;
     private Connection connection;
-    private PreparedStatement  preparedStatement;
+    private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private AlertMessage alertMessage = new AlertMessage();
 
@@ -45,17 +45,8 @@ public class LoginController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         login_selectUser.setOnAction(event -> Complementos.switchPages(login_selectUser));
         chechBox_password.setOnAction(event -> showPassword());
-        userList();
+        Complementos.userList(login_selectUser);
         login_loginBtnDoctor.setOnAction(event -> loginAccount());
-    }
-
-    public void userList(){
-        List<String> ListU = new ArrayList<>();
-        for (String data : Users.users){
-            ListU.add(data);
-        }
-        ObservableList listData = FXCollections.observableList(ListU);
-        login_selectUser.setItems(listData);
     }
 
     public void showPassword(){

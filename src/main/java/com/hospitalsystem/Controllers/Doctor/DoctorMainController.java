@@ -1,8 +1,8 @@
 package com.hospitalsystem.Controllers.Doctor;
 
-import com.hospitalsystem.AlertMessage;
+import com.hospitalsystem.Controllers.Utils.AlertMessage;
 import com.hospitalsystem.Controllers.Citas.CitasData;
-import com.hospitalsystem.Data;
+import com.hospitalsystem.Controllers.Utils.Data;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,14 +15,16 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import static com.hospitalsystem.Complementos.reduceUUID;
-import static com.hospitalsystem.Complementos.runTime;
-import static com.hospitalsystem.Database.connectionDB;
+import static com.hospitalsystem.Controllers.Utils.Complementos.reduceUUID;
+import static com.hospitalsystem.Controllers.Utils.Complementos.runTime;
+import static com.hospitalsystem.Controllers.Utils.Data.doctor_id;
+import static com.hospitalsystem.Controllers.Utils.Database.connectionDB;
 
 public class DoctorMainController implements Initializable {
     public Circle top_profile;
@@ -86,10 +88,13 @@ public class DoctorMainController implements Initializable {
     public Button citas_btn_insertar;
     public Button citas_btn_eliminar;
     public Button citas_btn_limpiar;
+    public DatePicker citas_tf_horario;
+    public Label citas_label_citaId;
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private AlertMessage alertMessage = new AlertMessage();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         showData();
@@ -97,6 +102,10 @@ public class DoctorMainController implements Initializable {
         citasMostrarData();
         listaDeGeneros();
         listaEstatus();
+        citas_btn_actualizar.setOnAction(event -> actualizarCita());
+        citas_btn_insertar.setOnAction(event -> citaBotonInsertar());
+        citas_btn_limpiar.setOnAction(event -> limpiarFormularioCitas());
+        citas_btn_eliminar.setOnAction(event -> eliminarRegistro());
     }
 
     public ObservableList<CitasData> citasObtenerData(){
@@ -108,18 +117,60 @@ public class DoctorMainController implements Initializable {
             preparedStatement = connection.prepareStatement(consulta);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                citasData = new CitasData(resultSet.getInt("cita_id"), resultSet.getString("name"),
+                citasData = new CitasData(resultSet.getString("cita_id"), resultSet.getString("name"),
                         resultSet.getString("genero"), resultSet.getString("telefono"),
                         resultSet.getString("descripcion"), resultSet.getDate("fecha_creacion"),resultSet.getDate("fecha_modificacion"),
-                        resultSet.getDate("fecha_eliminacion"),resultSet.getString("estatus"));
+                        resultSet.getDate("fecha_eliminacion"),resultSet.getString("estatus"), resultSet.getString("diagnostico"),
+                        resultSet.getString("tratamiento"), resultSet.getString("direccion"),resultSet.getDate("calendario"));
                 listData.add(citasData);
             }
         }catch (Exception e) { e.printStackTrace(); }
         return listData;
     }
 
-
     public ObservableList<CitasData> citasListaData;
+    public void citaBotonInsertar(){
+        if (validarFormulario()) return;
+        if (!existenciaDoctor(doctor_id)){
+            alertMessage.errorMessage("El id del doctor es incorrecto o no exite en la base de datos, por favor regístrate");
+            return;
+        }
+        connection = connectionDB();
+        try {
+            String crearCita  = "INSERT INTO citas ( name, genero,descripcion,diagnostico,tratamiento,telefono," +
+                    "direccion,estatus,doctor_id,calendario) VALUES (?,?,?,?,?,?,?,?,?,?);";
+            preparedStatement =connection.prepareStatement(crearCita);
+            preparedStatement.setString(1, (citas_tf_nombre.getText()));
+            preparedStatement.setString(2, (String)citas_cb_genero.getSelectionModel().getSelectedItem());
+            preparedStatement.setString(3, (citas_tf_descripcion.getText()));
+            preparedStatement.setString(4, (citas_tf_diagnostico.getText()));
+            preparedStatement.setString(5, (citas_tf_tratamiento.getText()));
+            preparedStatement.setString(6, (citas_tf_telefono.getText()));
+            preparedStatement.setString(7, (citas_tf_direccion.getText()));
+            preparedStatement.setString(8, (String)citas_cb_estatus.getSelectionModel().getSelectedItem());
+            preparedStatement.setString(9, (doctor_id));
+            preparedStatement.setString(10, ("" + citas_tf_horario.getValue()));
+            preparedStatement.executeUpdate();
+            limpiarFormularioCitas();
+            citasMostrarData();
+            alertMessage.successMessagge("Cita creada exitosamente");
+        }catch (Exception e) { e.printStackTrace(); }
+    }
+
+
+    public boolean existenciaDoctor(String id){
+        String consulta = "SELECT * FROM doctores WHERE doctor_id = ?;";
+        connection = connectionDB();
+        try {
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+        }catch (Exception e) { e.printStackTrace(); }
+        return false;
+    }
 
     public void citasMostrarData(){
         citasListaData = citasObtenerData();
@@ -128,7 +179,7 @@ public class DoctorMainController implements Initializable {
         citas_col_genero.setCellValueFactory(new PropertyValueFactory<>("genero"));
         citas_col_telefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         citas_col_descripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        citas_col_fecha.setCellValueFactory(new PropertyValueFactory<>("fechaCreacion"));
+        citas_col_fecha.setCellValueFactory(new PropertyValueFactory<>("calendario"));
         citas_col_fechaModificacion.setCellValueFactory(new PropertyValueFactory<>("fechaModificacion"));
         citas_col_fechaEliminar.setCellValueFactory(new PropertyValueFactory<>("fechaEliminacion"));
         citas_col_estatus.setCellValueFactory(new PropertyValueFactory<>("estatus"));
@@ -155,7 +206,7 @@ public class DoctorMainController implements Initializable {
 
     private void showData(){
         nav_doctorName.setText(Data.doctor_userName);
-        String idReducido = reduceUUID(Data.doctor_id);
+        String idReducido = reduceUUID(doctor_id);
         nav_doctorId.setText(idReducido);
         top_Name.setText(Data.doctor_userName);
     }
@@ -174,5 +225,139 @@ public class DoctorMainController implements Initializable {
             pacientes_form.setVisible(false);
             citas_form.setVisible(true);
         }
+    }
+
+    public void limpiarFormularioCitas(){
+        citas_label_citaId.setText("");
+        citas_tf_descripcion.clear();
+        citas_tf_diagnostico.clear();
+        citas_tf_tratamiento.clear();
+        citas_tf_telefono.clear();
+        citas_tf_direccion.clear();
+        citas_cb_genero.getSelectionModel().clearSelection();
+        citas_cb_estatus.getSelectionModel().clearSelection();
+        citas_tf_horario.setValue(null);
+    }
+
+    public void actualizarCita(){
+        if (!existenciaDoctor(doctor_id)){
+            alertMessage.errorMessage("No puedes realizar esta acción");
+            return;
+        }
+        if (validarFormulario()) return;
+        String id = uuidSeparado(citas_label_citaId.getText());
+        System.out.println(citas_label_citaId.getText());
+        Date sqlDate = new Date(new java.util.Date().getTime());
+        connection = connectionDB();
+            String consulta = "UPDATE citas SET name = ? , genero = ?, descripcion = ?, diagnostico = ?, tratamiento = ?," +
+                    "telefono = ?, direccion = ?, estatus = ? , fecha_modificacion = ?, calendario = ? WHERE cita_id = ?;";
+        try {
+            if (alertMessage.confirmationMessage("¿Estás seguro que quieres actualizar los datos de la cita: " + id)){
+                preparedStatement = connection.prepareStatement(consulta);
+                preparedStatement.setString(1, citas_tf_nombre.getText());
+                preparedStatement.setString(2, citas_cb_genero.getSelectionModel().getSelectedItem().toString());
+                preparedStatement.setString(3, citas_tf_descripcion.getText());
+                preparedStatement.setString(4, citas_tf_diagnostico.getText());
+                preparedStatement.setString(5, citas_tf_tratamiento.getText());
+                preparedStatement.setString(6, citas_tf_telefono.getText());
+                preparedStatement.setString(7, citas_tf_direccion.getText());
+                preparedStatement.setString(8, citas_cb_estatus.getSelectionModel().getSelectedItem().toString());
+                preparedStatement.setDate(9, sqlDate);
+                preparedStatement.setString(10, String.valueOf(citas_tf_horario.getValue()));
+                preparedStatement.setString(11, citas_label_citaId.getText());
+                preparedStatement.executeUpdate();
+                citasMostrarData();
+                limpiarFormularioCitas();
+                alertMessage.confirmationMessage("Los datos se han actualizado correctamente");
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public String uuidSeparado(String uuid){
+        String[] idSeparado = uuid.split("-");
+        return idSeparado[0];
+    }
+
+    private boolean validarFormulario() {
+        if (
+                citas_tf_nombre.getText().isEmpty() ||
+                citas_cb_genero.getSelectionModel().getSelectedItem() == null ||
+                citas_tf_descripcion.getText().isEmpty() ||
+                citas_tf_diagnostico.getText().isEmpty() ||
+                citas_tf_tratamiento.getText().isEmpty() ||
+                citas_tf_telefono.getText().isEmpty() ||
+                citas_tf_direccion.getText().isEmpty() ||
+                citas_cb_estatus.getSelectionModel().getSelectedItem() == null ||
+                citas_tf_horario.getValue() == null
+        )
+        {
+            alertMessage.errorMessage("Por favor completa todos los campos.");
+            return true;
+        }
+        return false;
+    }
+
+
+    public void dataSeleccionada(){
+        CitasData cData = (CitasData) citas_tableView.getSelectionModel().getSelectedItem();
+        if(cData == null){
+            return;
+        }
+        int num = citas_tableView.getSelectionModel().getSelectedIndex();
+        if ((num - 1) <  0){
+            return;
+        }
+        citas_label_citaId.setText("" + cData.getCitaID());
+        citas_tf_nombre.setText(cData.getName());
+        citas_cb_genero.getSelectionModel().select(cData.getGenero());
+        citas_tf_descripcion.setText(cData.getDescripcion());
+        citas_tf_diagnostico.setText(cData.getDiagnostico());
+        citas_tf_tratamiento.setText(cData.getTratamiento());
+        citas_tf_telefono.setText(cData.getTelefono());
+        citas_tf_direccion.setText(cData.getDireccion());
+        citas_cb_estatus.getSelectionModel().select(cData.getEstatus());
+    }
+
+    public boolean validarCita(String uuid){
+        String checkCita = "SELECT * FROM citas WHERE cita_id = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(checkCita);
+            preparedStatement.setString(1, uuid);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                return true;
+            }
+        }catch (Exception e){ e.printStackTrace(); }
+
+        return false;
+    }
+
+    public void eliminarRegistro(){
+        if (citas_label_citaId.getText().isEmpty()) {
+            alertMessage.errorMessage("Por favor selecciona un item.");
+            return;
+        }
+        if (!validarCita(citas_label_citaId.getText())){
+            alertMessage.errorMessage("Por favor selecciona una cita existente");
+            return;
+        }
+        try {
+
+            java.sql.Date fechaEliminacion = new Date(new java.util.Date().getTime());
+            String consulta = "UPDATE citas SET fecha_eliminacion = ? WHERE cita_id = ?;";
+            connection = connectionDB();
+            if (alertMessage.confirmationMessage("Estás seguro que quieres eliminar la cita de " + citas_tf_nombre.getText())) {
+                preparedStatement = connection.prepareStatement(consulta);
+                preparedStatement.setDate(1, fechaEliminacion);
+                preparedStatement.setString(2, citas_label_citaId.getText());
+                preparedStatement.executeUpdate();
+                citasMostrarData();
+                limpiarFormularioCitas();
+                alertMessage.confirmationMessage("La cita ha sido eliminada correctamente");
+            }else{
+                alertMessage.errorMessage("Acción cancelada.");
+            }
+        }catch (Exception e){e.printStackTrace();}
     }
 }

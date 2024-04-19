@@ -1,6 +1,6 @@
 package com.hospitalsystem.Controllers.Admin;
 
-import com.hospitalsystem.Data;
+import com.hospitalsystem.Controllers.Utils.Data;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
@@ -13,7 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 import java.net.URL;
 import java.util.ResourceBundle;
-import static com.hospitalsystem.Complementos.runTime;
+import static com.hospitalsystem.Controllers.Utils.Complementos.runTime;
 
 public class DashboardController implements Initializable {
     public Circle top_profile;

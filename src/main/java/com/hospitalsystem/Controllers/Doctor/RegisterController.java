@@ -1,7 +1,7 @@
 package com.hospitalsystem.Controllers.Doctor;
 
-import com.hospitalsystem.AlertMessage;
-import com.hospitalsystem.Database;
+import com.hospitalsystem.Controllers.Utils.AlertMessage;
+import com.hospitalsystem.Controllers.Utils.Database;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,7 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
-import static com.hospitalsystem.Complementos.encryptPassword;
+import static com.hospitalsystem.Controllers.Utils.Complementos.encryptPassword;
 
 public class RegisterController implements Initializable {
     public AnchorPane register_form;

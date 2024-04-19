@@ -1,4 +1,4 @@
-package com.hospitalsystem;
+package com.hospitalsystem.Controllers.Utils;
 
 public class Data {
     public static String admin_userName;
