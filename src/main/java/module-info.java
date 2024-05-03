@@ -13,5 +13,6 @@ module hospital.hospitalsystem {
     exports com.hospitalsystem.Controllers.Paciente;
     exports com.hospitalsystem.Controllers.Citas;
     exports com.hospitalsystem.Controllers.Utils;
+    exports com.hospitalsystem.Controllers.Grabar;
     opens com.hospitalsystem.Controllers.Utils to javafx.fxml;
 }

@@ -10,11 +10,20 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.hospitalsystem.Controllers.Utils.Database.connectionDB;
+
 public class Complementos {
 
+    public static Connection connection;
+    public static PreparedStatement preparedStatement;
+    public static ResultSet resultSet;
     public static String reduceUUID(String uuid){
         String[] ids = uuid.split("-");
         return ids[0];
@@ -71,7 +80,28 @@ public class Complementos {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
     }
-    
+
+    public static boolean verificarCorrero(String correo){
+        if(correo.isEmpty()){
+            return false;
+        }
+        connection = connectionDB();
+        try {
+            String consulta = "SELECT email FROM pacientes WHERE email = ?";
+
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, correo);
+            resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                return true;
+            }
+
+        }catch (Exception e) {e.printStackTrace();}
+
+        return false;
+    }
+
     public static void hideStage(Button btn){
         btn.getScene().getWindow().hide();
     }

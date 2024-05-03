@@ -1,6 +1,17 @@
-USE hospital_system;
-DROP TABLE IF EXITS citas;
-DROP TABLE IF EXITS doctores;
+CREATE DATABASE hospital_systemm;
+
+USE hospital_systemm;
+
+CREATE TABLE admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    nombre_completo VARCHAR(100),
+    imagen TEXT,
+    genero VARCHAR(100) NOT NULL UNIQUE
+    fecha DATE DEFAULT TIMESTAMP(NOW())
+);
+
 CREATE TABLE doctores(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     doctor_id VARCHAR(50) DEFAULT (UUID()),
@@ -15,7 +26,7 @@ CREATE TABLE doctores(
 
 CREATE TABLE citas(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    cita_id INT(50) NOT NULL,
+    cita_id VARCHAR(50) NOT NULL UNIQUE DEFAULT(UUID()),
     paciente_id BIGINT,
     name VARCHAR(100) NOT NULL,
     genero VARCHAR(50) NOT NULL,
@@ -32,3 +43,23 @@ CREATE TABLE citas(
     calendario DATE
 );
 
+
+CREATE TABLE pacientes(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    codigo VARCHAR(100),
+    numero VARCHAR(15),
+    direccion TEXT,
+    imagen VARCHAR(500),
+    diagnostico TEXT,
+    tratamiento TEXT,
+    descipcion TEXT,
+    doctor VARCHAR(100)
+    fecha DATE,
+    fecha_modificacion DATE,
+    fecha_eliminacion DATE,
+    estatus VARCHAR(100),
+    genero VARCHAR(50) NOT NULL
+)

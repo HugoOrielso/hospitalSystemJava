@@ -6,6 +6,7 @@ import com.hospitalsystem.Controllers.Utils.Data;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
@@ -21,9 +22,10 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import static com.hospitalsystem.Controllers.Utils.Complementos.reduceUUID;
-import static com.hospitalsystem.Controllers.Utils.Complementos.runTime;
+
+import static com.hospitalsystem.Controllers.Utils.Complementos.*;
 import static com.hospitalsystem.Controllers.Utils.Data.doctor_id;
+import static com.hospitalsystem.Controllers.Utils.Data.genero;
 import static com.hospitalsystem.Controllers.Utils.Database.connectionDB;
 
 public class DoctorMainController implements Initializable {
@@ -58,14 +60,12 @@ public class DoctorMainController implements Initializable {
     public TableColumn<CitasData,String> citas_col_fechaModificacion;
     public TableColumn<CitasData,String> citas_col_fechaEliminar;
     public TableColumn<CitasData,String> citas_col_estatus;
-    public TextField tf_pacienteId;
     public TextField tf_pacienteNombre;
-    public ComboBox tf_pacienteGenero;
+    public ComboBox <String> pacienteGenero;
     public TextField tf_pacienteTelefono;
     public TextField tf_pacientePassword;
     public TextField tf_pacienteDireccion;
     public Button paciente_confirmarBtn;
-    public Label cp_lb_pacienteId;
     public Label cp_lb_password;
     public Label cp_lb_fechaCreacion;
     public Label ip_lb_nombre;
@@ -90,6 +90,8 @@ public class DoctorMainController implements Initializable {
     public Button citas_btn_limpiar;
     public DatePicker citas_tf_horario;
     public Label citas_label_citaId;
+    public TextField tf_email;
+    public Label cp_lb_email;
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
@@ -102,10 +104,130 @@ public class DoctorMainController implements Initializable {
         citasMostrarData();
         listaDeGeneros();
         listaEstatus();
+        pacienteGeneroLista();
         citas_btn_actualizar.setOnAction(event -> actualizarCita());
         citas_btn_insertar.setOnAction(event -> citaBotonInsertar());
         citas_btn_limpiar.setOnAction(event -> limpiarFormularioCitas());
         citas_btn_eliminar.setOnAction(event -> eliminarRegistro());
+        paciente_confirmarBtn.setOnAction(event -> confirmBtn());
+        ip_lb_addBtn.setOnAction(event -> addBtnPaciente());
+        ip_lb_registroBtn.setOnAction(event -> pacienteGrabarBtn());
+    }
+
+    private void confirmBtn(){
+        if (
+                tf_pacienteNombre.getText().isEmpty() ||
+                pacienteGenero.getSelectionModel().getSelectedItem() == null ||
+                tf_pacienteTelefono.getText().isEmpty() ||
+                tf_pacientePassword.getText().isEmpty() ||
+                tf_pacienteDireccion.getText().isEmpty() || tf_email.getText().isEmpty()
+        ){
+            alertMessage.errorMessage("Por favor completa todos los campos.");
+            return;
+        }
+        Date fecha = new Date(new java.util.Date().getTime());
+        cp_lb_password.setText(tf_pacientePassword.getText());
+        cp_lb_fechaCreacion.setText(String.valueOf(fecha));
+        ip_lb_nombre.setText(tf_pacienteNombre.getText());
+        ip_lb_genero.setText(String.valueOf(pacienteGenero.getSelectionModel().getSelectedItem()));
+        ip_lb_telefono.setText(tf_pacienteTelefono.getText());
+        ip_lb_direccion.setText(tf_pacienteDireccion.getText());
+        cp_lb_email.setText(tf_email.getText());
+    }
+
+    public void addBtnPaciente(){
+        if (cp_lb_password.getText().isEmpty() ||
+                cp_lb_email.getText().isEmpty() ||
+                cp_lb_fechaCreacion.getText().isEmpty() ||
+                ip_lb_nombre.getText().isEmpty() ||
+                ip_lb_genero.getText().isEmpty() ||
+                ip_lb_telefono.getText().isEmpty() ||
+                ip_lb_direccion.getText().isEmpty()
+
+        ) {
+            alertMessage.errorMessage("Por favor completa todos los campos.");
+            return;
+        }
+        try{
+            String insertarData = "INSERT INTO pacientes (nombre, email, password, numero, direccion, doctor, estatus, genero) VALUES (?,?,?,?,?,?,?,?);";
+            if(verificarCorrero(tf_email.getText())){
+                alertMessage.errorMessage("El paciente ya existe, por favor intenta con otro");
+                return;
+            }
+            if(!verificarDoctor(doctor_id)){
+                alertMessage.errorMessage("El doctor no existe");
+                return;
+            }
+
+            connection = connectionDB();
+            String passwordEncriptada = encryptPassword(tf_pacientePassword.getText());
+            if (passwordEncriptada.isEmpty()){
+                alertMessage.errorMessage("No se pudo guardar el registro intenta más tarde");
+                return;
+            }
+            preparedStatement = connection.prepareStatement(insertarData);
+            preparedStatement.setString(1, tf_pacienteNombre.getText());
+            preparedStatement.setString(2, tf_email.getText());
+            preparedStatement.setString(3, passwordEncriptada);
+            preparedStatement.setString(4, tf_pacienteTelefono.getText());
+            preparedStatement.setString(5, tf_pacienteDireccion.getText());
+            preparedStatement.setString(6, doctor_id);
+            preparedStatement.setString(7, "confirmado");
+            preparedStatement.setString(8, pacienteGenero.getSelectionModel().getSelectedItem());
+            preparedStatement.executeUpdate();
+            alertMessage.confirmationMessage("Agregado correctamente");
+            limpiarFormularioAddPaciente();
+        }catch (Exception e) {e.printStackTrace();}
+    }
+
+    public boolean verificarDoctor(String id){
+        if (id.isEmpty()){
+            return false;
+        }
+        try {
+            String consulta = "SELECT * FROM doctores WHERE doctor_id = ?;";
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                return true;
+            }else {
+                return false;
+            }
+        }catch (Exception e) { e.printStackTrace();}
+        return true;
+    }
+
+    public void pacienteGrabarBtn(){
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Grabar/GrabarPaginaForm.fxml"));
+            createStage(loader);
+            hideStage(ip_lb_registroBtn);
+    }
+
+    public void limpiarFormularioAddPaciente(){
+        tf_pacienteNombre.clear();
+        pacienteGenero.getSelectionModel().clearSelection();
+        tf_pacienteTelefono.clear();
+        tf_pacientePassword.clear();
+        tf_pacienteDireccion.clear();
+        tf_email.clear();
+        cp_lb_password.setText("");
+        cp_lb_fechaCreacion.setText("");
+        ip_lb_nombre.setText("");
+        ip_lb_genero.setText("");
+        ip_lb_telefono.setText("");
+        ip_lb_direccion.setText("");
+        cp_lb_email.setText("");
+    }
+
+    private void pacienteGeneroLista(){
+        List<String> listG = new ArrayList<>();
+
+        for (String data : genero){
+            listG.add(data);
+        }
+        ObservableList lista = FXCollections.observableList(listG);
+        pacienteGenero.setItems(lista);
     }
 
     public ObservableList<CitasData> citasObtenerData(){
@@ -130,7 +252,7 @@ public class DoctorMainController implements Initializable {
 
     public ObservableList<CitasData> citasListaData;
     public void citaBotonInsertar(){
-        if (validarFormulario()) return;
+        if (!validarFormulario()) return;
         if (!existenciaDoctor(doctor_id)){
             alertMessage.errorMessage("El id del doctor es incorrecto o no exite en la base de datos, por favor regístrate");
             return;
@@ -156,7 +278,6 @@ public class DoctorMainController implements Initializable {
             alertMessage.successMessagge("Cita creada exitosamente");
         }catch (Exception e) { e.printStackTrace(); }
     }
-
 
     public boolean existenciaDoctor(String id){
         String consulta = "SELECT * FROM doctores WHERE doctor_id = ?;";
@@ -188,7 +309,7 @@ public class DoctorMainController implements Initializable {
 
     public void listaDeGeneros(){
         List<String> listaGeneros = new ArrayList<>();
-        for (String data : Data.genero) {
+        for (String data : genero) {
             listaGeneros.add(data);
         }
         ObservableList generos = FXCollections.observableList(listaGeneros);
@@ -244,7 +365,7 @@ public class DoctorMainController implements Initializable {
             alertMessage.errorMessage("No puedes realizar esta acción");
             return;
         }
-        if (validarFormulario()) return;
+        if (!validarFormulario()) return;
         String id = uuidSeparado(citas_label_citaId.getText());
         System.out.println(citas_label_citaId.getText());
         Date sqlDate = new Date(new java.util.Date().getTime());
@@ -292,9 +413,9 @@ public class DoctorMainController implements Initializable {
         )
         {
             alertMessage.errorMessage("Por favor completa todos los campos.");
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
 
@@ -343,7 +464,6 @@ public class DoctorMainController implements Initializable {
             return;
         }
         try {
-
             java.sql.Date fechaEliminacion = new Date(new java.util.Date().getTime());
             String consulta = "UPDATE citas SET fecha_eliminacion = ? WHERE cita_id = ?;";
             connection = connectionDB();
@@ -360,4 +480,6 @@ public class DoctorMainController implements Initializable {
             }
         }catch (Exception e){e.printStackTrace();}
     }
+
+
 }

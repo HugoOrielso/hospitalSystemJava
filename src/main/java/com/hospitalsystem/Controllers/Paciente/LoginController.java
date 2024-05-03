@@ -79,12 +79,10 @@ public class LoginController implements Initializable {
             alert.errorMessage("Completa todos los campos.");
             return;
         }
-
         if(!isValidEmail(login_emailPaciente.getText()) ){
             alert.errorMessage("Estructura de email incorrecta, ingresa un email válido");
             return;
         }
-
         try {
             String sql = "SELECT * FROM pacientes WHERE email = ?;";
             connection = Database.connectionDB();
@@ -97,16 +95,13 @@ public class LoginController implements Initializable {
                     login_passwordPaciente.setText(login_showPassword.getText());
                 }
             }
-
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1,login_emailPaciente.getText());
             resultSet = preparedStatement.executeQuery();
-
             if (!resultSet.next()){
                 alert.errorMessage("El usuario no existe en la base de datos.");
                 return;
             }
-
             String passwordDesencriptada = decryptPassword(resultSet.getString("password"));
             if (!passwordDesencriptada.equals(login_showPassword.getText())){
                 alert.errorMessage("Contraseña incorrecta");

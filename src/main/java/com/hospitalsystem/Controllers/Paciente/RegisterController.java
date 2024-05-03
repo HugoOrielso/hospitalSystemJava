@@ -69,11 +69,9 @@ public class RegisterController implements Initializable {
             alertMessage.errorMessage("Por favor llena todos los campos.");
             return;
         }
-
         String checkUserName = "SELECT * FROM pacientes WHERE email = ?";
         connection = Database.connectionDB();
         try {
-
             if(!register_showPassword.isVisible()){
                 if(!register_showPassword.getText().equals(register_passwordPaciente.getText())){
                     register_showPassword.setText(register_passwordPaciente.getText());
@@ -83,21 +81,17 @@ public class RegisterController implements Initializable {
                     register_passwordPaciente.setText(register_showPassword.getText());
                 }
             }
-
             preparedStatement = connection.prepareStatement(checkUserName);
             preparedStatement.setString(1, register_emailPaciente.getText());
             resultSet = preparedStatement.executeQuery();
-
             if (resultSet.next()){
                 alertMessage.errorMessage("El usuario " + register_userPaciente.getText() + " ya existe.");
                 return;
             }
-
             if(register_passwordPaciente.getText().length() < 8){
                 alertMessage.errorMessage("La contraseña debe tener al menos 8 caracteres.");
                 return;
             }
-
             if (!isValidEmail(register_emailPaciente.getText())){
                 alertMessage.errorMessage("Ingresa un email válido.");
                 return;
@@ -115,13 +109,11 @@ public class RegisterController implements Initializable {
             e.printStackTrace();
         }
     }
+
     public void limpiarFormulario(){
         register_passwordPaciente.clear();
         register_emailPaciente.clear();
         register_userPaciente.clear();
         register_showPassword.clear();
     }
-
-
-
 }
