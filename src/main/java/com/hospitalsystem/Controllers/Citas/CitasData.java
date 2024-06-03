@@ -1,42 +1,40 @@
 package com.hospitalsystem.Controllers.Citas;
 
-
-
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.Date;
 
 public class CitasData {
-    @Getter
+    @Getter @Setter
     private String citaID;
-    @Getter
+    @Getter @Setter
     private String name;
-    @Getter
+    @Getter @Setter
     private String genero;
-    @Getter
+    @Getter @Setter
     private String descripcion;
-    @Getter
+    @Getter @Setter
     private String diagnostico;
-    @Getter
+    @Getter @Setter
     private String tratamiento;
-    @Getter
+    @Getter @Setter
     private String telefono;
-    @Getter
+    @Getter @Setter
     private String direccion;
-    @Getter
-    private Date fechaCreacion;
-    @Getter
+    @Getter @Setter
+    private String fechaCreacion;
+    @Getter @Setter
     private Date fechaModificacion;
-    @Getter
+    @Getter @Setter
     private Date fechaEliminacion;
-    @Getter
+    @Getter @Setter
     private String estatus;
+    @Getter @Setter
     private String doctorId;
-    @Getter
+    @Getter @Setter
     private Date calendario;
 
-    public CitasData(String citaID, String name, String genero, String telefono, String descripcion, Date fechaCreacion,
+    public CitasData(String citaID, String name, String genero, String telefono, String descripcion, String fechaCreacion,
                      Date fechaModificacion, Date fechaEliminacion, String estatus, String diagnostico, String tratamiento,
                      String direccion,Date calendario){
         this.citaID = citaID;
@@ -54,4 +52,13 @@ public class CitasData {
         this.calendario = calendario;
     }
 
+    public CitasData(){}
+
+    public CitasData(String citaID, String name, String descripcion, String fechaCreacion, String estatus){
+        this.citaID = citaID;
+        this.name = name;
+        this.descripcion = descripcion;
+        this.fechaCreacion = fechaCreacion;
+        this.estatus = estatus;
+    }
 }

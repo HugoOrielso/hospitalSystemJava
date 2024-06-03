@@ -18,7 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
-import static com.hospitalsystem.Controllers.Utils.Complementos.encryptPassword;
+import static com.hospitalsystem.Controllers.Utils.Utils.encryptPassword;
 
 public class RegisterController implements Initializable {
     public AnchorPane register_form;
@@ -108,7 +108,7 @@ public class RegisterController implements Initializable {
         Parent root = FXMLLoader.load(getClass().getResource("/Fxml/Doctor/Login.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root);
-         stage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Imagenes/logo.jpg"))));
+        stage.getIcons().add(new Image(String.valueOf(getClass().getResource("/Imagenes/logo.jpg"))));
         stage.setScene(scene);
         stage.show();
      }

@@ -10,11 +10,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
+
+import javafx.scene.image.Image;
+import java.io.File;
 import java.net.URL;
+import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -23,9 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static com.hospitalsystem.Controllers.Utils.Complementos.*;
-import static com.hospitalsystem.Controllers.Utils.Data.doctor_id;
-import static com.hospitalsystem.Controllers.Utils.Data.genero;
+import static com.hospitalsystem.Controllers.Utils.Utils.*;
+import static com.hospitalsystem.Controllers.Utils.Data.*;
 import static com.hospitalsystem.Controllers.Utils.Database.connectionDB;
 
 public class DoctorMainController implements Initializable {
@@ -43,12 +52,9 @@ public class DoctorMainController implements Initializable {
     public Label dashboard_TP;
     public Label dashboard_AP;
     public Label dashboard_TC;
-    public AreaChart dashboard_chart_DP;
     public BarChart dashboard_chart_DD;
-    public TableView<CitasData> dashboard_tableView;
     public TableColumn dashboard_col_doctorID;
     public TableColumn dashboard_col_nombre;
-    public TableColumn dashboard_col_especializacion;
     public AnchorPane pacientes_form;
     public AnchorPane citas_form;
     public TableColumn<CitasData,String> citas_col_id;
@@ -75,7 +81,6 @@ public class DoctorMainController implements Initializable {
     public Button ip_lb_addBtn;
     public Button ip_lb_registroBtn;
     public TableView citas_tableView;
-    public TextField citas_tf_citaId;
     public TextField citas_tf_nombre;
     public ComboBox citas_cb_genero;
     public TextField citas_tf_descripcion;
@@ -92,10 +97,40 @@ public class DoctorMainController implements Initializable {
     public Label citas_label_citaId;
     public TextField tf_email;
     public Label cp_lb_email;
+    public TextField profile_tf_nombre;
+    public TextField profile_tf_email;
+    public ComboBox profile_tf_genero;
+    public TextField profile_tf_numero;
+    public TextField profile_tf_direccion;
+    public  ComboBox profile_tf_especializacion;
+    public Button profile_btn_actualizar;
+    public ComboBox profile_tf_estatus;
+    public Label profile_label_creacion;
+    public Label profile_label_email;
+    public Label profile_label_nombre;
+    public Button profile_import_btn;
+    public Circle profile_circle_image;
+    public AnchorPane configuracion_page_perfil;
+    public Label profile_label_id;
+    public Label label_especializacion;
+    public Label label_genero;
+    public Label dashboard_IP;
+    public TableColumn<CitasData,String> dashboard_col_citaId;
+    public TableColumn<CitasData,String> dashboard_col_nombreCita;
+    public TableColumn<CitasData,String> dashboard_col_descripcionCita;
+    public TableColumn<CitasData,String> dashboard_col_fechaCita;
+    public TableColumn<CitasData,String> dashboard_col_estatusCita;
+    public TableView<CitasData> dashboard_tableViewCitas;
+    public AreaChart dashboard_chart_NDP;
+    public BarChart dashboard_chart_NDC;
+    public Button logout_btn;
+    public Button citas_btn_generarPdf;
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private AlertMessage alertMessage = new AlertMessage();
+    private Image imagen;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -105,6 +140,17 @@ public class DoctorMainController implements Initializable {
         listaDeGeneros();
         listaEstatus();
         pacienteGeneroLista();
+        profileLabels();
+        profileFields();
+        especializacionesList();
+        mostrarImagen();
+        displayInfoDashboardTC();
+        displayInfoDashboardIP();
+        displayInfoDashboardTP();
+        displayInfoDashboardAP();
+        mostrarDataCitasTable();
+        dashboardNP();
+        dashboardNC();
         citas_btn_actualizar.setOnAction(event -> actualizarCita());
         citas_btn_insertar.setOnAction(event -> citaBotonInsertar());
         citas_btn_limpiar.setOnAction(event -> limpiarFormularioCitas());
@@ -112,6 +158,147 @@ public class DoctorMainController implements Initializable {
         paciente_confirmarBtn.setOnAction(event -> confirmBtn());
         ip_lb_addBtn.setOnAction(event -> addBtnPaciente());
         ip_lb_registroBtn.setOnAction(event -> pacienteGrabarBtn());
+        profile_btn_actualizar.setOnAction(event -> profileUpdateBtn());
+        profile_import_btn.setOnAction(event -> changeProfile());
+        logout_btn.setOnAction(event -> cerrarSesion());
+    }
+
+    public void cerrarSesion(){
+        doctor_id = "";
+        doctor_userName = "";
+        hideStage(logout_btn);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Doctor/Login.fxml"));
+        createStage(loader);
+    }
+
+    public void displayInfoDashboardIP(){
+        String consulta = "SELECT COUNT(id) FROM pacientes WHERE estatus = ? && doctor = ?;";
+
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, estatus[1]);
+            preparedStatement.setString(2, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                dashboard_IP.setText(String.valueOf(resultSet.getInt("COUNT(id)")));
+            }
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void displayInfoDashboardTP(){
+        String consulta = "SELECT COUNT(id) FROM pacientes WHERE doctor = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                dashboard_TP.setText(String.valueOf(resultSet.getInt("COUNT(id)")));
+            }
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void displayInfoDashboardAP(){
+        String consulta = "SELECT COUNT(id) FROM pacientes WHERE estatus = ? && doctor = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, estatus[0]);
+            preparedStatement.setString(2, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                dashboard_AP.setText(String.valueOf(resultSet.getInt("COUNT(id)")));
+            }
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void displayInfoDashboardTC(){
+        String consulta = "SELECT COUNT(id) FROM citas WHERE estatus = ? && doctor_id = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, estatus[0]);
+            preparedStatement.setString(2, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                dashboard_TC.setText(String.valueOf(resultSet.getInt("COUNT(id)")));
+            }
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void especializacionesList(){
+        List<String> ListEspecializaciones = new ArrayList<>();
+        for (String data: Data.especializaciones){
+            ListEspecializaciones.add(data);
+        }
+        ObservableList<String> listData = FXCollections.observableList(ListEspecializaciones);
+        profile_tf_especializacion.setItems(listData);
+    }
+
+    public ObservableList<CitasData> dashboardTablaCitas(){
+        ObservableList<CitasData> listData = FXCollections.observableArrayList();
+        String consulta = "SELECT * FROM citas WHERE doctor_id = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            CitasData cData;
+            while (resultSet.next()){
+                cData = new CitasData(resultSet.getString("cita_id"),resultSet.getString("name"),resultSet.getString("descripcion"),resultSet.getString("fecha_creacion"), resultSet.getString("estatus"));
+                listData.add(cData);
+            }
+            return listData;
+        }catch (Exception e){e.printStackTrace();}
+        return listData;
+    }
+    ObservableList<CitasData> dasboardGetData;
+    private void mostrarDataCitasTable(){
+         dasboardGetData = dashboardTablaCitas();
+        dashboard_col_citaId.setCellValueFactory(new PropertyValueFactory<>("citaID"));
+        dashboard_col_nombreCita.setCellValueFactory(new PropertyValueFactory<>("name"));
+        dashboard_col_descripcionCita.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        dashboard_col_fechaCita.setCellValueFactory(new PropertyValueFactory<>("fechaCreacion"));
+        dashboard_col_estatusCita.setCellValueFactory(new PropertyValueFactory<>("estatus"));
+        dashboard_tableViewCitas.setItems(dasboardGetData);
+    }
+
+    public void dashboardNP(){
+        dashboard_chart_NDP.getData().clear();
+
+        String consulta = "SELECT fecha, COUNT(id) FROM pacientes WHERE estatus = ? && doctor = ? GROUP BY TIMESTAMP(fecha) ASC LIMIT 8;";
+        try {
+            XYChart.Series chart = new XYChart.Series();
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, estatus[2]);
+            preparedStatement.setString(2, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                chart.getData().add(new XYChart.Data(resultSet.getString(1), resultSet.getInt(2)));
+            }
+
+            dashboard_chart_NDP.getData().add(chart);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void dashboardNC(){
+        dashboard_chart_NDC.getData().clear();
+
+        String consulta = "SELECT fecha_creacion, COUNT(id) FROM citas WHERE doctor_id = ? GROUP BY TIMESTAMP(fecha_creacion) ASC LIMIT 7;";
+        try {
+            XYChart.Series chart = new XYChart.Series();
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                chart.getData().add(new XYChart.Data(resultSet.getString(1), resultSet.getInt(2)));
+            }
+
+            dashboard_chart_NDC.getData().add(chart);
+        }catch (Exception e){e.printStackTrace();}
     }
 
     private void confirmBtn(){
@@ -143,17 +330,18 @@ public class DoctorMainController implements Initializable {
                 ip_lb_genero.getText().isEmpty() ||
                 ip_lb_telefono.getText().isEmpty() ||
                 ip_lb_direccion.getText().isEmpty()
-
         ) {
             alertMessage.errorMessage("Por favor completa todos los campos.");
             return;
         }
         try{
+
             String insertarData = "INSERT INTO pacientes (nombre, email, password, numero, direccion, doctor, estatus, genero) VALUES (?,?,?,?,?,?,?,?);";
             if(verificarCorrero(tf_email.getText())){
                 alertMessage.errorMessage("El paciente ya existe, por favor intenta con otro");
                 return;
             }
+
             if(!verificarDoctor(doctor_id)){
                 alertMessage.errorMessage("El doctor no existe");
                 return;
@@ -199,9 +387,8 @@ public class DoctorMainController implements Initializable {
     }
 
     public void pacienteGrabarBtn(){
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Grabar/GrabarPaginaForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Registros/RegistrosPaginaForm.fxml"));
             createStage(loader);
-            hideStage(ip_lb_registroBtn);
     }
 
     public void limpiarFormularioAddPaciente(){
@@ -241,7 +428,7 @@ public class DoctorMainController implements Initializable {
             while (resultSet.next()) {
                 citasData = new CitasData(resultSet.getString("cita_id"), resultSet.getString("name"),
                         resultSet.getString("genero"), resultSet.getString("telefono"),
-                        resultSet.getString("descripcion"), resultSet.getDate("fecha_creacion"),resultSet.getDate("fecha_modificacion"),
+                        resultSet.getString("descripcion"), resultSet.getString("fecha_creacion"),resultSet.getDate("fecha_modificacion"),
                         resultSet.getDate("fecha_eliminacion"),resultSet.getString("estatus"), resultSet.getString("diagnostico"),
                         resultSet.getString("tratamiento"), resultSet.getString("direccion"),resultSet.getDate("calendario"));
                 listData.add(citasData);
@@ -316,6 +503,216 @@ public class DoctorMainController implements Initializable {
         citas_cb_genero.setItems(generos);
     }
 
+    public void listaDeGenerosDoctor(){
+        List<String> listaGeneros = new ArrayList<>();
+        for (String data : genero) {
+            listaGeneros.add(data);
+        }
+        ObservableList generos = FXCollections.observableList(listaGeneros);
+        profile_tf_genero.setItems(generos);
+    }
+
+    public void profileUpdateBtn(){
+        if(profile_tf_nombre.getText().isEmpty()
+                || profile_tf_email.getText().isEmpty()
+                || profile_tf_numero.getText().isEmpty()
+                || profile_tf_direccion.getText().isEmpty()
+        ){
+            alertMessage.errorMessage("Completa todos los campos");
+            return;
+        }
+
+        if(path.isEmpty() || "".equals(path) || path == null ){
+            String consulta = "UPDATE doctores SET email = ?, nombre_completo = ?, especializacion = ?, status = ?, direccion = ?, sexo = ?, telefono = ?, fecha_modificacion = ? WHERE doctor_id = ?;";
+            try {
+                java.util.Date date = new java.util.Date();
+                Date sqlDate = new java.sql.Date(date.getTime());
+                connection = connectionDB();
+                preparedStatement = connection.prepareStatement(consulta);
+                preparedStatement.setString(1, profile_tf_email.getText());
+                preparedStatement.setString(2, profile_tf_nombre.getText());
+                preparedStatement.setString(3, profile_tf_especializacion.getSelectionModel().getSelectedItem().toString());
+                preparedStatement.setString(4, profile_tf_estatus.getSelectionModel().getSelectedItem().toString());
+                preparedStatement.setString(5, profile_tf_direccion.getText());
+                preparedStatement.setString(6, profile_tf_genero.getSelectionModel().getSelectedItem().toString());
+                preparedStatement.setString(7, profile_tf_numero.getText());
+
+                preparedStatement.setDate(8, sqlDate);
+                preparedStatement.setString(9, doctor_id);
+
+                int rows = preparedStatement.executeUpdate();
+                if (rows > 0) {
+                    alertMessage.successMessagge("Perfil actualizado correctamente.");
+                    return;
+                }
+                alertMessage.errorMessage("No se pudo actializar el perfil, intenta más tarde.");
+
+                return;
+            }catch (Exception e) { e.printStackTrace(); }
+        }
+        /// si la direccion no es nula
+
+
+        String consulta = "UPDATE doctores SET email = ?, nombre_completo = ?, especializacion = ?,  direccion = ?, sexo = ?, telefono = ?, fecha_modificacion = ?, imagen = ? WHERE doctor_id = ?;";
+        try {
+            java.util.Date date = new java.util.Date();
+            Date sqlDate = new java.sql.Date(date.getTime());
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, profile_tf_email.getText());
+            preparedStatement.setString(2, profile_tf_nombre.getText());
+            if(profile_tf_especializacion.isVisible()){
+                preparedStatement.setString(3, profile_tf_especializacion.getSelectionModel().getSelectedItem().toString());
+            }
+            if(label_genero.isVisible()){
+                preparedStatement.setString(3,label_genero.getText());
+            }
+            preparedStatement.setString(4, profile_tf_direccion.getText());
+            if (profile_tf_genero.isVisible()){
+                preparedStatement.setString(5, profile_tf_genero.getSelectionModel().getSelectedItem().toString());
+            }
+            if(label_genero.isVisible()){
+                preparedStatement.setString(5,label_genero.getText());
+            }
+            preparedStatement.setString(6, profile_tf_numero.getText());
+
+            preparedStatement.setDate(7, sqlDate);
+            path = path.replace("\\", "\\\\");
+            Path transfer = Paths.get(path);
+
+
+            Path copy = Paths.get("C:\\Users\\Usuario\\OneDrive\\Documentos\\Proyectos\\Java\\HospitalSystem\\src\\main\\java\\com\\hospitalsystem\\Directorio\\" + doctor_id + ".jpg");
+            try {
+                Files.copy(transfer, copy, StandardCopyOption.REPLACE_EXISTING);
+            }catch (Exception e) {e.printStackTrace();}
+            preparedStatement.setString(8,  copy.toAbsolutePath().toString());
+
+            preparedStatement.setString(9, doctor_id);
+
+            int rows = preparedStatement.executeUpdate();
+            if (rows > 0) {
+                alertMessage.successMessagge("Perfil actualizado correctamente.");
+                return;
+            }
+            alertMessage.errorMessage("No se pudo actializar el perfil, intenta más tarde.");
+
+            return;
+        }catch (Exception e) { e.printStackTrace(); }
+
+
+
+
+
+    }
+
+    public void changeProfile(){
+        FileChooser open = new FileChooser();
+        open.getExtensionFilters().add(new FileChooser.ExtensionFilter("Abrir imagen", "*.png", "*.jpg", "*.jpeg", "*.bmp"));
+        File file = open.showOpenDialog(profile_import_btn.getScene().getWindow());
+        if (file != null) {
+            Data.path = file.getAbsolutePath();
+            imagen = new Image(file.toURI().toString(),139,101,false,true);
+            profile_circle_image.setFill(new ImagePattern(imagen));
+        }
+    }
+
+    public void profileLabels(){
+        String consulta = "SELECT * FROM doctores WHERE doctor_id = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                profile_label_id.setText(resultSet.getString("doctor_id").split("-")[0]);
+                profile_label_nombre.setText(resultSet.getString("nombre_completo"));
+                profile_label_email.setText(resultSet.getString("email"));
+                profile_label_creacion.setText(resultSet.getString("fecha_creacion"));
+            }
+        }catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public void profileFields(){
+        String consulta = "SELECT * FROM doctores WHERE doctor_id = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                profile_tf_nombre.setText(resultSet.getString("nombre_completo"));
+                profile_tf_email.setText(resultSet.getString("email"));
+
+                if(resultSet.getString("telefono") == null){
+                    profile_tf_numero.setPromptText("Aún sin teléfono registrado");
+                }else{
+                    profile_tf_numero.setText(resultSet.getString("telefono"));
+                }
+
+                if(resultSet.getString("sexo") == null){
+                    label_genero.setVisible(false);
+                    profile_tf_genero.setVisible(true);
+                    listaDeGenerosDoctor();
+                }else{
+                    label_genero.setVisible(true);
+                    profile_tf_genero.setVisible(false);
+                    label_genero.setText(resultSet.getString("sexo"));
+                }
+
+                if (resultSet.getString("direccion") == null){
+                    profile_tf_direccion.setPromptText("Aún sin dirección registrada");
+                }else {
+                    profile_tf_direccion.setText(resultSet.getString("direccion"));
+                }
+
+                if (resultSet.getString("especializacion") == null){
+                    label_especializacion.setVisible(false);
+                    profile_tf_especializacion.setVisible(true);
+                    listaEstatus();
+                }else{
+                    label_especializacion.setVisible(true);
+                    profile_tf_especializacion.setVisible(false);
+                    label_especializacion.setText(resultSet.getString("especializacion"));
+                }
+            }
+        }catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public void mostrarImagen(){
+        String consulta = "SELECT * FROM doctores WHERE doctor_id = ?;";
+        try {
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String imagenPath = resultSet.getString("imagen");
+                if (imagenPath != null && !imagenPath.trim().isEmpty()) {
+                    String fullImagePath = "file:" + imagenPath.trim();
+
+                    // Configuración de la imagen para top_profile
+                    imagen = new Image(fullImagePath, 1002, 20, false, true);
+                    top_profile.setFill(new ImagePattern(imagen));
+
+                    // Configuración de la imagen para profile_circle_image
+                    imagen = new Image(fullImagePath, 139, 101, false, true);
+                    profile_circle_image.setFill(new ImagePattern(imagen));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public void listaEstatus(){
         List<String> listaEstatus = new ArrayList<>();
         for (String data : Data.estatus) {
@@ -337,14 +734,22 @@ public class DoctorMainController implements Initializable {
             dashboard_form.setVisible(true);
             pacientes_form.setVisible(false);
             citas_form.setVisible(false);
+            configuracion_page_perfil.setVisible(false);
         }else if (actionEvent.getSource() == pacientes_btn){
             dashboard_form.setVisible(false);
             pacientes_form.setVisible(true);
+            configuracion_page_perfil.setVisible(false);
             citas_form.setVisible(false);
         }else if (actionEvent.getSource() == citas_btn){
             dashboard_form.setVisible(false);
+            configuracion_page_perfil.setVisible(false);
             pacientes_form.setVisible(false);
             citas_form.setVisible(true);
+        } else if (actionEvent.getSource() == perfil_btn) {
+            configuracion_page_perfil.setVisible(true);
+            citas_form.setVisible(false);
+            pacientes_form.setVisible(false);
+            dashboard_form.setVisible(false);
         }
     }
 
@@ -450,7 +855,6 @@ public class DoctorMainController implements Initializable {
                 return true;
             }
         }catch (Exception e){ e.printStackTrace(); }
-
         return false;
     }
 

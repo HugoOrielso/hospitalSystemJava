@@ -119,7 +119,7 @@ public class PacientesData {
     }
 
     public PacientesData(Integer id,String codigo, String nombre, String telefono, String direccion, Date fecha, Date fechaModificacion,
-                         Date fechaEliminacion, String genero){
+                         Date fechaEliminacion, String genero, String estado){
         this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
@@ -129,5 +129,6 @@ public class PacientesData {
         this.fechaEliminacion = fechaEliminacion;
         this.fechaModificacion = fechaModificacion;
         this.genero = genero;
+        this.estado = estado;
     }
 }

@@ -19,11 +19,12 @@ import java.util.*;
 
 import static com.hospitalsystem.Controllers.Utils.Database.connectionDB;
 
-public class Complementos {
+public class Utils {
 
     public static Connection connection;
     public static PreparedStatement preparedStatement;
     public static ResultSet resultSet;
+
     public static String reduceUUID(String uuid){
         String[] ids = uuid.split("-");
         return ids[0];
@@ -38,7 +39,7 @@ public class Complementos {
         }
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.getIcons().add(new Image(String.valueOf(Complementos.class.getResource("/Imagenes/logo.jpg"))));
+        stage.getIcons().add(new Image(String.valueOf(Utils.class.getResource("/Imagenes/logo.jpg"))));
         stage.setResizable(false);
         stage.setMinHeight(minHeight);
         stage.setMinWidth(minWidth);
@@ -55,7 +56,7 @@ public class Complementos {
         }
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.getIcons().add(new Image(String.valueOf(Complementos.class.getResource("/Imagenes/logo.jpg"))));
+        stage.getIcons().add(new Image(String.valueOf(Utils.class.getResource("/Imagenes/logo.jpg"))));
         stage.setResizable(true);
         stage.setTitle("Hospital Taliznay");
         stage.show();
@@ -64,13 +65,13 @@ public class Complementos {
     public static void switchPages(ComboBox login_selectUser){
         FXMLLoader loader = null;
         if (login_selectUser.getSelectionModel().getSelectedItem() == "Administrador"){
-            loader = new FXMLLoader(Complementos.class.getResource("/Fxml/Admin/Login.fxml"));
+            loader = new FXMLLoader(Utils.class.getResource("/Fxml/Admin/Login.fxml"));
         }
         if (login_selectUser.getSelectionModel().getSelectedItem() == "Doctor"){
-            loader = new FXMLLoader(Complementos.class.getResource("/Fxml/Doctor/Login.fxml"));
+            loader = new FXMLLoader(Utils.class.getResource("/Fxml/Doctor/Login.fxml"));
         }
         if (login_selectUser.getSelectionModel().getSelectedItem() == "Paciente"){
-            loader = new FXMLLoader(Complementos.class.getResource("/Fxml/Paciente/Login.fxml"));
+            loader = new FXMLLoader(Utils.class.getResource("/Fxml/Paciente/Login.fxml"));
         }
         login_selectUser.getScene().getWindow().hide();
         createStage(loader,340,580);
@@ -148,6 +149,8 @@ public class Complementos {
         ObservableList<String> listData = FXCollections.observableList(ListU);
         userList.setItems(listData);
     }
+
+
 
 }
 

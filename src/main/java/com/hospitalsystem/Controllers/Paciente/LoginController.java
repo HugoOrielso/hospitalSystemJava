@@ -1,11 +1,8 @@
 package com.hospitalsystem.Controllers.Paciente;
 
 import com.hospitalsystem.Controllers.Utils.AlertMessage;
-import com.hospitalsystem.Controllers.Utils.Complementos;
-import com.hospitalsystem.Controllers.Utils.Users;
+import com.hospitalsystem.Controllers.Utils.Utils;
 import com.hospitalsystem.Controllers.Utils.Database;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,18 +12,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
-import static com.hospitalsystem.Controllers.Utils.Complementos.decryptPassword;
-import static com.hospitalsystem.Controllers.Utils.Complementos.isValidEmail;
+import static com.hospitalsystem.Controllers.Utils.Utils.decryptPassword;
+import static com.hospitalsystem.Controllers.Utils.Utils.isValidEmail;
 
 public class LoginController implements Initializable {
 
@@ -48,10 +42,10 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        login_selectUserPaciente.setOnAction(event -> Complementos.switchPages(login_selectUserPaciente));
+        login_selectUserPaciente.setOnAction(event -> Utils.switchPages(login_selectUserPaciente));
         login_loginBtn.setOnAction(event -> loginAccount());
         chechBox_password.setOnAction(event -> showPassword());
-        Complementos.userList(login_selectUserPaciente);
+        Utils.userList(login_selectUserPaciente);
     }
 
     public void toRegister(ActionEvent event) throws IOException {

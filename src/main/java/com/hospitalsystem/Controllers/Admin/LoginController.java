@@ -5,16 +5,11 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import com.hospitalsystem.Controllers.Utils.AlertMessage;
-import com.hospitalsystem.Controllers.Utils.Complementos;
-import com.hospitalsystem.Controllers.Utils.Users;
+import com.hospitalsystem.Controllers.Utils.Utils;
 import com.hospitalsystem.Controllers.Utils.Data;
 import com.hospitalsystem.Controllers.Utils.Database;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,7 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import static com.hospitalsystem.Controllers.Utils.Complementos.*;
+import static com.hospitalsystem.Controllers.Utils.Utils.*;
 
 public class LoginController implements Initializable {
     public AnchorPane main_form;
@@ -48,8 +43,8 @@ public class LoginController implements Initializable {
         // TODO Auto-generated method stub
         login_loginBtn.setOnAction(event -> loginAccount());
         chechBox_password.setOnAction(event -> showLoginPassword());
-        login_selectUser.setOnAction(event -> Complementos.switchPages(login_selectUser));
-        Complementos.userList(login_selectUser);
+        login_selectUser.setOnAction(event -> Utils.switchPages(login_selectUser));
+        Utils.userList(login_selectUser);
     }
 
     public void toRegister(ActionEvent event) throws IOException{
@@ -77,7 +72,7 @@ public class LoginController implements Initializable {
             alert.errorMessage("Completa todos los campos.");
             return;
         }
-        if(!Complementos.isValidEmail(login_email.getText())){
+        if(!Utils.isValidEmail(login_email.getText())){
             alert.errorMessage("Ingresa una dirección de correo válida.");
             return;
         }

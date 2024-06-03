@@ -5,6 +5,7 @@ module hospital.hospitalsystem {
     requires jdk.httpserver;
     requires de.jensd.fx.glyphs.fontawesome;
     requires static lombok;
+    requires java.desktop;
 
     opens com.hospitalsystem to javafx.fxml;
     exports com.hospitalsystem;
@@ -13,6 +14,6 @@ module hospital.hospitalsystem {
     exports com.hospitalsystem.Controllers.Paciente;
     exports com.hospitalsystem.Controllers.Citas;
     exports com.hospitalsystem.Controllers.Utils;
-    exports com.hospitalsystem.Controllers.Grabar;
+    exports com.hospitalsystem.Controllers.Registros;
     opens com.hospitalsystem.Controllers.Utils to javafx.fxml;
 }

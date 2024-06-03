@@ -19,7 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
-import static com.hospitalsystem.Controllers.Utils.Complementos.encryptPassword;
+import static com.hospitalsystem.Controllers.Utils.Utils.encryptPassword;
 
 public class RegisterController implements Initializable {
     public AnchorPane register_form;

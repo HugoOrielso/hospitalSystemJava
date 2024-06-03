@@ -275,14 +275,15 @@
                </AnchorPane>
                <TableView fx:id="doctores_tableView" layoutX="20.8" layoutY="55.2" prefHeight="490.0" prefWidth="844.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="55.0">
                   <columns>
-                     <TableColumn fx:id="doctores_col_doctorID" prefWidth="75.0" text="Doctor ID" />
-                     <TableColumn fx:id="doctores_col_nombre" prefWidth="75.0" text="Nombre" />
+                     <TableColumn fx:id="doctores_col_doctorID" prefWidth="45.59998017549515" text="ID" />
+                     <TableColumn fx:id="doctores_col_nombre" prefWidth="106.40002059936523" text="Nombre" />
                      <TableColumn fx:id="doctores_col_genero" prefWidth="75.0" text="Género" />
-                     <TableColumn fx:id="doctores_col_telefono" prefWidth="134.40000915527344" text="Número de contacto" />
+                     <TableColumn fx:id="doctores_col_telefono" prefWidth="134.40000915527344" text="Teléfono" />
                      <TableColumn fx:id="doctores_col_email" prefWidth="108.800048828125" text="Email" />
                      <TableColumn fx:id="doctores_col_especializacion" prefWidth="129.60003662109375" text="Especialización" />
                      <TableColumn fx:id="doctores_col_direccion" minWidth="9.60003662109375" prefWidth="132.00006103515625" text="Dirección" />
-                     <TableColumn fx:id="doctores_col_acciones" minWidth="0.7999267578125" prefWidth="109.60003662109375" text="Acción" />
+                     <TableColumn fx:id="doctores_col_estatus" minWidth="0.7999267578125" prefWidth="109.60003662109375" text="Estatus" />
+                     <TableColumn fx:id="doctores_col_acciones" minWidth="9.60003662109375" prefWidth="132.00006103515625" text="Acción" />
                   </columns>
                   <columnResizePolicy>
                      <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
