@@ -8,10 +8,12 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.shape.Circle?>
@@ -41,13 +43,14 @@
             <Circle fx:id="top_profile" fill="DODGERBLUE" layoutX="1002.0" layoutY="20.0" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.rightAnchor="82.0" />
             <Label layoutX="1026.0" layoutY="11.0" text="Activo" AnchorPane.rightAnchor="40.4" />
             <Circle fill="#1fff55" layoutX="1072.0" layoutY="20.0" radius="5.0" stroke="#05e311" strokeType="INSIDE" AnchorPane.rightAnchor="23.0" />
-            <Label layoutX="798.0" layoutY="11.0" text="Hola, " AnchorPane.rightAnchor="233.60000000000005" />
-            <Label fx:id="top_adminName" layoutX="866.0" layoutY="10.0" prefHeight="19.0" prefWidth="102.0" text="Hugo" AnchorPane.rightAnchor="132.0">
+            <Label layoutX="580.0" layoutY="11.0" text="Hola, " AnchorPane.rightAnchor="488.79999999999995" />
+            <Label fx:id="top_adminName" layoutX="610.0" layoutY="10.0" prefHeight="19.0" prefWidth="102.0" text="Hugo" AnchorPane.rightAnchor="387.6">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <Label fx:id="data_time" layoutX="718.0" layoutY="11.0" text="MM/DD/YYYY" AnchorPane.rightAnchor="307.6" />
+            <Label fx:id="data_time" layoutX="462.0" layoutY="11.0" text="MM/DD/YYYY" AnchorPane.rightAnchor="563.6" />
+            <Button fx:id="logout_btn" layoutX="817.0" layoutY="8.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="101.0" styleClass="btn-1" text="Salir" />
          </AnchorPane>
       </top>
       <left>
@@ -59,7 +62,7 @@
                <String fx:value="border-side" />
                <String fx:value="bg-color-1" />
             </styleClass>
-            <FontAwesomeIconView fill="WHITE" glyphName="USER" layoutX="86.0" layoutY="51.0" size="5EM" />
+            <FontAwesomeIconView fill="WHITE" glyphName="USER" layoutX="86.0" layoutY="51.0" size="5EM" text="" />
             <Label layoutX="22.0" layoutY="83.0" text="Admin Id:" textFill="WHITE" />
             <Label fx:id="nav_adminID" layoutX="82.0" layoutY="82.0" text="1" textFill="WHITE">
                <font>
@@ -103,12 +106,12 @@
                   <Font name="System Bold Italic" size="12.0" />
                </font>
             </Label>
-            <Button fx:id="perfil_btn" layoutX="8.0" layoutY="457.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Configuración">
+            <Button fx:id="perfil_btn" layoutX="8.0" layoutY="457.0" mnemonicParsing="false" onAction="#swichtScene" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Configuración">
                <graphic>
                   <FontAwesomeIconView glyphName="COGS" size="1.5EM" />
                </graphic>
             </Button>
-            <Button fx:id="pagos_btn" layoutX="6.0" layoutY="388.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Pagos">
+            <Button fx:id="pagos_btn" layoutX="6.0" layoutY="388.0" mnemonicParsing="false" onAction="#swichtScene" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" text="Pagos">
                <graphic>
                   <FontAwesomeIconView glyphName="CREDIT_CARD" size="1.5EM" />
                </graphic>
@@ -242,17 +245,18 @@
                         <String fx:value="shadow" />
                         <String fx:value="radius" />
                      </styleClass>
-                     <TableView fx:id="dashboard_tableView" layoutX="6.0" layoutY="41.0" prefHeight="274.0" prefWidth="430.0" AnchorPane.bottomAnchor="4.600000000000023" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="5.600000000000136" AnchorPane.topAnchor="40.80000000000001">
+                     <TableView fx:id="dashboard_tableViewDataDoctor" layoutX="6.0" layoutY="41.0" prefHeight="274.0" prefWidth="430.0" AnchorPane.bottomAnchor="4.600000000000023" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="5.600000000000136" AnchorPane.topAnchor="40.80000000000001">
                         <columns>
-                           <TableColumn fx:id="dashboard_col_doctorID" prefWidth="66.40002143383026" text="Doctor ID " />
-                           <TableColumn fx:id="dashboard_col_nombre" prefWidth="169.6000518798828" text="Nombre" />
-                           <TableColumn fx:id="dashboard_col_especializacion" prefWidth="195.199951171875" text="Especialización" />
+                           <TableColumn fx:id="dashboard_col_doctorID" prefWidth="66.40002143383026" text="Id" />
+                           <TableColumn fx:id="dashboard_col_nombre" prefWidth="105.60005187988281" text="Nombre" />
+                           <TableColumn fx:id="dashboard_col_especializacion" prefWidth="160.79998779296875" text="Especialización" />
+                           <TableColumn fx:id="dashboard_col_estatus" prefWidth="116.800048828125" text="Estatus" />
                         </columns>
                         <columnResizePolicy>
                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                         </columnResizePolicy>
                      </TableView>
-                     <Label layoutX="6.0" layoutY="14.0" text="Doctor unformación">
+                     <Label layoutX="6.0" layoutY="14.0" text="Doctor información">
                         <font>
                            <Font size="14.0" />
                         </font>
@@ -260,7 +264,7 @@
                   </AnchorPane>
                </AnchorPane>
             </AnchorPane>
-            <AnchorPane fx:id="doctores_form" layoutX="8.8" prefHeight="560.0" prefWidth="876.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane fx:id="doctores_form" layoutX="8.8" prefHeight="560.0" prefWidth="876.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <AnchorPane layoutX="7.0" layoutY="8.0" prefHeight="544.0" prefWidth="870.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="7.199999999999932" AnchorPane.topAnchor="8.0">
                   <styleClass>
                      <String fx:value="shadow" />
@@ -308,8 +312,8 @@
                   </AnchorPane>
                   <TableView fx:id="pacientes_tableView" layoutX="20.8" layoutY="55.2" prefHeight="490.0" prefWidth="844.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="55.0">
                      <columns>
-                        <TableColumn fx:id="pacientes_col_id" prefWidth="78.39999467134476" text="Paciente ID" />
-                        <TableColumn fx:id="pacientes_col_nombre" prefWidth="59.199981689453125" text="Nombre" />
+                        <TableColumn fx:id="pacientes_col_id" prefWidth="43.99998742341995" text="Id" />
+                        <TableColumn fx:id="pacientes_col_nombre" prefWidth="91.19998550415039" text="Nombre" />
                         <TableColumn fx:id="pacientes_col_genero" prefWidth="68.0" text="Género" />
                         <TableColumn fx:id="pacientes_col_telefono" prefWidth="84.80001831054688" text="Teléfono" />
                         <TableColumn fx:id="pacientes_col_descripcion" prefWidth="150.4000244140625" text="Descripción" />
@@ -340,17 +344,16 @@
                         </Label>
                      </children>
                   </AnchorPane>
-                  <TableView layoutX="20.8" layoutY="55.2" prefHeight="490.0" prefWidth="844.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="55.0">
+                  <TableView fx:id="citas_tableView" layoutX="20.8" layoutY="55.2" prefHeight="490.0" prefWidth="844.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="55.0">
                      <columns>
-                        <TableColumn fx:id="citas_col_id" prefWidth="75.0" text="Cita ID" />
-                        <TableColumn fx:id="citas_col_nombre" prefWidth="75.0" text="Nombre" />
+                        <TableColumn fx:id="citas_col_id" prefWidth="46.39998131990433" text="Id" />
+                        <TableColumn fx:id="citas_col_nombre" prefWidth="96.79999160766602" text="Nombre" />
                         <TableColumn fx:id="citas_col_genero" prefWidth="75.0" text="Género" />
                         <TableColumn fx:id="citas_col_telefono" prefWidth="97.60000610351562" text="Teléfono" />
                         <TableColumn fx:id="citas_col_descripcion" prefWidth="122.4000244140625" text="Descripción" />
                         <TableColumn fx:id="citas_col_fecha" prefWidth="80.79998779296875" text="Fecha" />
                         <TableColumn fx:id="citas_col_fechaModificacion" minWidth="9.60003662109375" prefWidth="123.20001220703125" text="Fecha modificación" />
-                        <TableColumn fx:id="citas_col_fechaEliminar" minWidth="0.7999267578125" prefWidth="121.60009765625" text="Fecha eliminar" />
-                        <TableColumn fx:id="citas_col_accion" minWidth="9.60003662109375" prefWidth="99.9998779296875" text="Acción" />
+                        <TableColumn fx:id="citas_col_estatus" minWidth="0.7999267578125" prefWidth="133.60006103515627" text="Estatus" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -358,7 +361,99 @@
                   </TableView>
                </children>
             </AnchorPane>
-            <AnchorPane prefHeight="570.4" prefWidth="886.4" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <AnchorPane fx:id="configuracion_form_profile" prefHeight="560.0" prefWidth="884.8" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <AnchorPane layoutX="14.0" layoutY="8.0" prefHeight="544.0" prefWidth="280.0" stylesheets="@../../Styles/Dashboard.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="8.0">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="white-bg" />
+                        <String fx:value="radius" />
+                     </styleClass>
+                     <children>
+                        <Circle fx:id="profile_circle" layoutX="140.0" layoutY="125.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Button fx:id="configuracion_btn_importar" layoutX="48.0" layoutY="236.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="184.0" styleClass="btn-1" text="Importar" />
+                        <Label layoutX="16.0" layoutY="302.0" text="Nombre:" />
+                        <Label fx:id="configuracion_label_nombre" layoutX="111.0" layoutY="302.0" prefHeight="18.0" prefWidth="157.0" text="....." />
+                        <Label layoutX="16.0" layoutY="330.0" text="Email" />
+                        <Label fx:id="configuracion_label_email" layoutX="111.0" layoutY="330.0" prefHeight="18.0" prefWidth="157.0" text="....." />
+                        <Label layoutX="16.0" layoutY="359.0" text="Fecha creación:" />
+                        <Label fx:id="configuracion_label_fechaCreacion" layoutX="111.0" layoutY="359.0" prefHeight="18.0" prefWidth="157.0" text="....." />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="302.0" layoutY="8.0" prefHeight="544.0" prefWidth="571.0" stylesheets="@../../Styles/Dashboard.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="302.39999999999986" AnchorPane.rightAnchor="11.599999999999909" AnchorPane.topAnchor="8.0">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="white-bg" />
+                        <String fx:value="radius" />
+                     </styleClass>
+                     <children>
+                        <Label layoutX="14.0" layoutY="14.0" styleClass="header-1" text="Editar perfil">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="180.0" layoutY="149.0" text="Nombre:" AnchorPane.bottomAnchor="377.4" AnchorPane.leftAnchor="180.0" />
+                        <TextField fx:id="configuracion_nombre_tf" layoutX="238.4" layoutY="145.0" prefHeight="26.0" prefWidth="150.0" styleClass="textfield-1" AnchorPane.bottomAnchor="374.0" AnchorPane.leftAnchor="238.0" AnchorPane.rightAnchor="183.0" />
+                        <Label layoutX="180.0" layoutY="189.0" text="Email:" AnchorPane.bottomAnchor="337.4" AnchorPane.leftAnchor="180.0" />
+                        <TextField fx:id="configuracion_email_tf" layoutX="239.2" layoutY="185.0" prefHeight="26.0" prefWidth="150.0" styleClass="textfield-1" AnchorPane.bottomAnchor="334.0" AnchorPane.leftAnchor="239.0" AnchorPane.rightAnchor="182.0" />
+                        <FontAwesomeIconView glyphName="COGS" layoutX="300.0" layoutY="495.0" opacity="0.67" size="20EM" AnchorPane.bottomAnchor="14.714279174804688" AnchorPane.rightAnchor="14.857147216796875" />
+                        <Button fx:id="configuracion_btn_actualizar" layoutX="181.0" layoutY="262.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="211.0" styleClass="btn-1" text="Actualizar" AnchorPane.bottomAnchor="246.8" AnchorPane.leftAnchor="181.0" AnchorPane.rightAnchor="181.39999999999998" />
+                        <Label layoutX="182.0" layoutY="228.0" text="Género" AnchorPane.bottomAnchor="298.4" AnchorPane.leftAnchor="182.0" />
+                        <ComboBox fx:id="configuracion_genero_cb" layoutX="239.0" layoutY="224.0" prefWidth="150.0" promptText="Seleccionar..." AnchorPane.bottomAnchor="294.4" AnchorPane.leftAnchor="239.0" AnchorPane.rightAnchor="181.59999999999994" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="payments_form" prefHeight="560.0" prefWidth="884.8" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="530.0" prefWidth="543.0" AnchorPane.bottomAnchor="15.600000000000023" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="327.19999999999993" AnchorPane.topAnchor="13.600000000000023">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="radius" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <Label layoutX="14.0" layoutY="14.0" styleClass="header-1" text="Pacientes">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="pagos_tableView" layoutX="14.0" layoutY="44.0" prefHeight="475.0" prefWidth="508.0" AnchorPane.bottomAnchor="11.199999999999989" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="20.800000000000068" AnchorPane.topAnchor="43.99999999999994">
+                          <columns>
+                            <TableColumn fx:id="payment_col_id" prefWidth="38.40004348754883" text="ID" />
+                            <TableColumn fx:id="payment_col_nombre" prefWidth="76.79998779296875" text="Nombre" />
+                              <TableColumn fx:id="payment_col_genero" prefWidth="76.79998779296875" text="Género" />
+                              <TableColumn fx:id="payment_col_diagnostico" prefWidth="109.60002136230469" text="Diagnóstico" />
+                              <TableColumn fx:id="payment_col_doctor" prefWidth="92.0" text="Doctor" />
+                              <TableColumn fx:id="payment_col_fecha" prefWidth="112.0" text="Fecha" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="580.0" layoutY="14.0" prefHeight="530.0" prefWidth="294.0" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="10.399999999999977" AnchorPane.topAnchor="13.6">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="radius" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <Circle fx:id="circle_img_payment" fill="DODGERBLUE" layoutX="147.0" layoutY="114.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" AnchorPane.leftAnchor="47.0" AnchorPane.rightAnchor="47.19999999999999" AnchorPane.topAnchor="14.0" />
+                        <Label layoutX="14.0" layoutY="257.0" text="Nombre paciente:" AnchorPane.leftAnchor="14.4" AnchorPane.topAnchor="257.0" />
+                        <Label layoutX="14.0" layoutY="239.0" text="Id paciente:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="239.0" />
+                        <Label layoutX="16.0" layoutY="275.0" text="Doctor:" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="275.0" />
+                        <Label layoutX="16.0" layoutY="293.0" text="Fecha:" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="293.0" />
+                        <Button fx:id="btn_verificar_payment" layoutX="88.0" layoutY="479.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="118.0" styleClass="btn-1" text="Verificar" AnchorPane.bottomAnchor="15.399999999999977" AnchorPane.leftAnchor="87.99999999999997" AnchorPane.rightAnchor="87.99999999999997" />
+                        <Label fx:id="label_idPaciente" alignment="CENTER_RIGHT" layoutX="243.0" layoutY="239.0" text="..." AnchorPane.rightAnchor="43.39999999999998" AnchorPane.topAnchor="239.0" />
+                        <Label fx:id="label_nombre" alignment="CENTER_RIGHT" layoutX="243.0" layoutY="256.0" text="..." AnchorPane.rightAnchor="43.39999999999998" AnchorPane.topAnchor="256.0" />
+                        <Label fx:id="label_doctor" alignment="CENTER_RIGHT" layoutX="243.0" layoutY="275.0" text="..." AnchorPane.rightAnchor="43.39999999999998" AnchorPane.topAnchor="275.0" />
+                        <Label fx:id="label_fecha" alignment="CENTER_RIGHT" layoutX="243.0" layoutY="292.0" text="..." AnchorPane.rightAnchor="43.39999999999998" AnchorPane.topAnchor="292.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
          </AnchorPane>
       </center>
    </BorderPane>

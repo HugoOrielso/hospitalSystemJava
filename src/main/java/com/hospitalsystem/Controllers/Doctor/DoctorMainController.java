@@ -29,10 +29,12 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static com.hospitalsystem.Controllers.Utils.GenerarPDF.generatePDF;
 import static com.hospitalsystem.Controllers.Utils.Utils.*;
 import static com.hospitalsystem.Controllers.Utils.Data.*;
 import static com.hospitalsystem.Controllers.Utils.Database.connectionDB;
@@ -125,6 +127,7 @@ public class DoctorMainController implements Initializable {
     public BarChart dashboard_chart_NDC;
     public Button logout_btn;
     public Button citas_btn_generarPdf;
+    public Label uuid_citas;
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
@@ -161,6 +164,34 @@ public class DoctorMainController implements Initializable {
         profile_btn_actualizar.setOnAction(event -> profileUpdateBtn());
         profile_import_btn.setOnAction(event -> changeProfile());
         logout_btn.setOnAction(event -> cerrarSesion());
+        citas_btn_generarPdf.setOnAction(event -> seleccionarCitaToPDF());
+    }
+
+    public void seleccionarCitaToPDF(){
+
+
+
+
+
+        if (doctor_userName.isEmpty() || citas_tf_nombre.getText().isEmpty() || citas_tf_diagnostico.getText().isEmpty()
+            || citas_tf_horario.getValue() == null || citas_tf_telefono.getText().isEmpty()
+        ){
+            alertMessage.errorMessage("Para generar el documento completa todos los campos.");
+            return;
+        }
+        System.out.println(citas_tf_nombre.getText());
+        try {
+            String consulta = "SELECT * FROM citas WHERE cita_id = ?;";
+            connection = connectionDB();
+            preparedStatement = connection.prepareStatement(consulta);
+            preparedStatement.setString(1, citas_label_citaId.getText());
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                generatePDF(doctor_userName, citas_tf_nombre.getText(), citas_tf_diagnostico.getText(), citas_tf_horario.getValue().toString(), citas_tf_telefono.getText(), citas_label_citaId.getText());
+                return;
+            }
+            alertMessage.errorMessage("Selecciona una cita válida");
+        }catch (Exception e){e.printStackTrace();}
     }
 
     public void cerrarSesion(){
@@ -253,6 +284,7 @@ public class DoctorMainController implements Initializable {
         }catch (Exception e){e.printStackTrace();}
         return listData;
     }
+
     ObservableList<CitasData> dasboardGetData;
     private void mostrarDataCitasTable(){
          dasboardGetData = dashboardTablaCitas();
@@ -266,7 +298,6 @@ public class DoctorMainController implements Initializable {
 
     public void dashboardNP(){
         dashboard_chart_NDP.getData().clear();
-
         String consulta = "SELECT fecha, COUNT(id) FROM pacientes WHERE estatus = ? && doctor = ? GROUP BY TIMESTAMP(fecha) ASC LIMIT 8;";
         try {
             XYChart.Series chart = new XYChart.Series();
@@ -278,7 +309,6 @@ public class DoctorMainController implements Initializable {
             while (resultSet.next()){
                 chart.getData().add(new XYChart.Data(resultSet.getString(1), resultSet.getInt(2)));
             }
-
             dashboard_chart_NDP.getData().add(chart);
         }catch (Exception e){e.printStackTrace();}
     }
@@ -296,7 +326,6 @@ public class DoctorMainController implements Initializable {
             while (resultSet.next()){
                 chart.getData().add(new XYChart.Data(resultSet.getString(1), resultSet.getInt(2)));
             }
-
             dashboard_chart_NDC.getData().add(chart);
         }catch (Exception e){e.printStackTrace();}
     }
@@ -335,18 +364,15 @@ public class DoctorMainController implements Initializable {
             return;
         }
         try{
-
             String insertarData = "INSERT INTO pacientes (nombre, email, password, numero, direccion, doctor, estatus, genero) VALUES (?,?,?,?,?,?,?,?);";
             if(verificarCorrero(tf_email.getText())){
                 alertMessage.errorMessage("El paciente ya existe, por favor intenta con otro");
                 return;
             }
-
             if(!verificarDoctor(doctor_id)){
                 alertMessage.errorMessage("El doctor no existe");
                 return;
             }
-
             connection = connectionDB();
             String passwordEncriptada = encryptPassword(tf_pacientePassword.getText());
             if (passwordEncriptada.isEmpty()){
@@ -536,7 +562,6 @@ public class DoctorMainController implements Initializable {
                 preparedStatement.setString(5, profile_tf_direccion.getText());
                 preparedStatement.setString(6, profile_tf_genero.getSelectionModel().getSelectedItem().toString());
                 preparedStatement.setString(7, profile_tf_numero.getText());
-
                 preparedStatement.setDate(8, sqlDate);
                 preparedStatement.setString(9, doctor_id);
 
@@ -550,8 +575,6 @@ public class DoctorMainController implements Initializable {
                 return;
             }catch (Exception e) { e.printStackTrace(); }
         }
-        /// si la direccion no es nula
-
 
         String consulta = "UPDATE doctores SET email = ?, nombre_completo = ?, especializacion = ?,  direccion = ?, sexo = ?, telefono = ?, fecha_modificacion = ?, imagen = ? WHERE doctor_id = ?;";
         try {
@@ -595,14 +618,8 @@ public class DoctorMainController implements Initializable {
                 return;
             }
             alertMessage.errorMessage("No se pudo actializar el perfil, intenta más tarde.");
-
             return;
         }catch (Exception e) { e.printStackTrace(); }
-
-
-
-
-
     }
 
     public void changeProfile(){
@@ -711,7 +728,6 @@ public class DoctorMainController implements Initializable {
             }
         }
     }
-
 
     public void listaEstatus(){
         List<String> listaEstatus = new ArrayList<>();
@@ -833,7 +849,10 @@ public class DoctorMainController implements Initializable {
         if ((num - 1) <  0){
             return;
         }
-        citas_label_citaId.setText("" + cData.getCitaID());
+        if(cData.getFechaCreacion() != null){
+            citas_tf_horario.setValue(LocalDate.parse(cData.getFechaCreacion()));
+        }
+        citas_label_citaId.setText(cData.getCitaID());
         citas_tf_nombre.setText(cData.getName());
         citas_cb_genero.getSelectionModel().select(cData.getGenero());
         citas_tf_descripcion.setText(cData.getDescripcion());
@@ -884,6 +903,4 @@ public class DoctorMainController implements Initializable {
             }
         }catch (Exception e){e.printStackTrace();}
     }
-
-
 }

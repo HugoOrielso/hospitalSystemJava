@@ -16,6 +16,7 @@ target/
 *.jpeg
 *.bmp
 *.gif
+*.pdf
 
 ### Eclipse ###
 .apt_generated

@@ -93,3 +93,42 @@
     -fx-font-family: Arial;
     -fx-text-fill: #fff;
 }
+
+.btn-1{
+    -fx-background-color: linear-gradient(to bottom right,#188ba7, #306090);
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: Arial;
+}
+
+.btn-1:hover{
+    -fx-background-color: linear-gradient(to bottom right, #35a0ba, #5589bc);
+}
+
+.textfield-2{
+    -fx-border-color:#000;
+    -fx-border-width: .4px;
+    -fx-font-family:Tahoma;
+}
+
+.textfield-2:focused{
+    -fx-border-color: linear-gradient(to bottom right, #188ba7,#306090);
+    -fx-border-width: 1px;
+}
+
+.textfield-1{
+    -fx-border-color:#000;
+    -fx-border-width: .4px;
+    -fx-font-family:Tahoma;
+}
+
+.textfield-1:focused{
+    -fx-border-color: linear-gradient(to bottom right, #188ba7,#306090);
+    -fx-border-width: 1px;
+}
+
+
+.centrarText {
+    -fx-alignment: center;
+}

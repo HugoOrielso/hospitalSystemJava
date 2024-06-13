@@ -434,6 +434,7 @@
                            <DatePicker fx:id="citas_tf_horario" layoutX="85.0" layoutY="23.0" AnchorPane.leftAnchor="85.0" AnchorPane.topAnchor="23.0" />
                            <Label layoutX="12.0" layoutY="28.0" text="Horario cita:" />
                            <Button fx:id="citas_btn_generarPdf" layoutX="367.0" layoutY="204.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="126.0" styleClass="btn-2" text="Pdf cita" />
+                           <Label fx:id="uuid_citas" layoutX="392.0" layoutY="154.0" visible="false" />
                         </children>
                      </AnchorPane>
                   </children>

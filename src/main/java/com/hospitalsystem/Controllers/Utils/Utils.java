@@ -30,7 +30,7 @@ public class Utils {
         return ids[0];
     }
 
-    public static void createStage(FXMLLoader loader, int minWidth, int minHeight) {
+    public static void createStage(FXMLLoader loader, int maxWidth, int maxHeight) {
         Scene scene = null;
         try {
             scene = new Scene(loader.load());
@@ -41,8 +41,8 @@ public class Utils {
         stage.setScene(scene);
         stage.getIcons().add(new Image(String.valueOf(Utils.class.getResource("/Imagenes/logo.jpg"))));
         stage.setResizable(false);
-        stage.setMinHeight(minHeight);
-        stage.setMinWidth(minWidth);
+        stage.setMinHeight(maxHeight);
+        stage.setMinWidth(maxWidth);
         stage.setTitle("Hospital Taliznay");
         stage.show();
     }

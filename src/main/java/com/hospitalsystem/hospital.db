@@ -42,7 +42,6 @@ CREATE TABLE citas(
     calendario DATE
 );
 
-
 CREATE TABLE pacientes(
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
@@ -61,4 +60,15 @@ CREATE TABLE pacientes(
     fecha_eliminacion DATE,
     estatus VARCHAR(100),
     genero VARCHAR(50) NOT NULL
-)
+);
+
+CREATE TABLE pagos(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    paciente_id VARCHAR(100) NOT NULL UNIQUE,
+    doctor_id VARCHAR(100) NOT NULL UNIQUE,
+    total_dias INT NOT NULL,
+    precio_total INT NOT NULL,
+    fecha_entrada DATE NOT NULL,
+    fecha_verificacion DATE NOT NULL,
+    fecha_pago DATE NOT NULL
+);

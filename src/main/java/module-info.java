@@ -6,6 +6,11 @@ module hospital.hospitalsystem {
     requires de.jensd.fx.glyphs.fontawesome;
     requires static lombok;
     requires java.desktop;
+    requires kernel;
+    requires layout;
+    requires io;
+    requires org.apache.poi.poi;
+    requires org.apache.poi.ooxml;
 
     opens com.hospitalsystem to javafx.fxml;
     exports com.hospitalsystem;

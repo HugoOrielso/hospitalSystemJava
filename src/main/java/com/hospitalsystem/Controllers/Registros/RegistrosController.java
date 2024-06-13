@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.ResourceBundle;
+
+import static com.hospitalsystem.Controllers.Utils.GenerarExcel.generarExcel;
 import static com.hospitalsystem.Controllers.Utils.Utils.createStage;
 import static com.hospitalsystem.Controllers.Utils.Data.doctor_id;
 import static com.hospitalsystem.Controllers.Utils.Database.connectionDB;
@@ -38,6 +40,7 @@ public class RegistrosController implements Initializable {
     public TableColumn<PacientesData, String> col_f_eliminacion;
     public TableColumn<PacientesData, String> col_accion;
     public TableView<PacientesData> tableViewGrabar;
+    public Button btn_excel;
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
@@ -49,7 +52,10 @@ public class RegistrosController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         displayDataPacientes();
         actionButtons();
+        btn_excel.setOnAction(event -> generarExcel(pacientesGrabarData));
     }
+
+
 
     public ObservableList<PacientesData> obtenerDataPacienteDT(){
         ObservableList<PacientesData> listData = FXCollections.observableArrayList();
@@ -119,14 +125,8 @@ public class RegistrosController implements Initializable {
                                 alertMessage.errorMessage("Por favor selecciona un registro.");
                                 return;
                             }
-                            Data.temp_Code = pData.getId();
-                            Data.temp_Name = pData.getNombre();
-                            Data.temp_Genero = pData.getGenero();
-                            Data.temp_Direccion = pData.getDireccion();
-                            Data.temp_Estatus = pData.getEstado();
-                            Data.temp_Telefono = pData.getTelefono();
                             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Paciente/EditarPaciente.fxml"));
-                            createStage(loader);
+                            createStage(loader,620,417);
 
                         } catch (Exception e) {
                             e.printStackTrace();

@@ -52,14 +52,23 @@ public class DataDoctor {
         this.fechaEliminacion = fechaEliminacion;
     }
 
-    public DataDoctor(Integer idDoctor, String doctorName, String genero, String telefono, String email, String especializacion, String direccion, String estatus) {
+    public DataDoctor(Integer idDoctor, String uuid, String doctorName, String genero, String telefono, String email, String especializacion, String direccion, String estatus, String imagen) {
         this.idDoctor = idDoctor;
+        this.doctorId = uuid;
         this.doctorName = doctorName;
         this.genero = genero;
         this.telefono = telefono;
         this.email = email;
         this.especializacion = especializacion;
         this.direccion = direccion;
+        this.estatus = estatus;
+        this.imagen = imagen;
+    }
+
+    public DataDoctor(Integer idDoctor, String doctorName, String especializacion, String estatus) {
+        this.idDoctor = idDoctor;
+        this.doctorName = doctorName;
+        this.especializacion = especializacion;
         this.estatus = estatus;
     }
 }

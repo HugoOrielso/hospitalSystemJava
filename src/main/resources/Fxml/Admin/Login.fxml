@@ -23,13 +23,13 @@
             </font>
          </Label>
          <Label layoutX="101.0" layoutY="117.0" text="Portal de administración" />
-         <TextField fx:id="login_email" layoutX="55.0" layoutY="147.0" prefHeight="30.0" prefWidth="220.0" promptText="Email">
+         <TextField fx:id="login_email" layoutX="55.0" layoutY="147.0" prefHeight="30.0" prefWidth="220.0" promptText="Email" text="admin@gmail.com">
             <styleClass>
                <String fx:value="textfield-1" />
                <String fx:value="white-bg" />
             </styleClass>
          </TextField>
-         <PasswordField fx:id="login_password" layoutX="55.0" layoutY="188.0" prefHeight="30.0" prefWidth="220.0" promptText="Contraseña">
+         <PasswordField fx:id="login_password" layoutX="55.0" layoutY="188.0" prefHeight="30.0" prefWidth="220.0" promptText="Contraseña" text="contraseña">
             <styleClass>
                <String fx:value="textfield-1" />
                <String fx:value="white-bg" />

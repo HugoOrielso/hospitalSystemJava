@@ -35,6 +35,7 @@ public class EditarPacienteController implements Initializable {
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
+
     public void setField(){
         edit_pacienteId.setText(String.valueOf(Data.temp_Code));
         edit_pacienteNombre.setText(Data.temp_Name);
