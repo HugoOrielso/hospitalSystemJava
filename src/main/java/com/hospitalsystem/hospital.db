@@ -1,40 +1,68 @@
-CREATE DATABASE hospital_system;
-
+CREATE DATABASE IF NOT EXISTS hospital_system;
 USE hospital_system;
 
 CREATE TABLE admin (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(100) NOT NULL UNIQUE,
+    nombre_completo VARCHAR(100),
     password VARCHAR(100) NOT NULL,
-    name VARCHAR(100),
-    imagen TEXT,
-    genero VARCHAR(100),
-    fecha DATE DEFAULT TIMESTAMP(NOW())
+    imagen VARCHAR(500),
+    genero VARCHAR(500),
+    fecha DATE DEFAULT CURRENT_DATE,
+    fecha_eliminacion DATE,
+    estatus VARCHAR(100)
 );
 
-CREATE TABLE doctores(
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    doctor_id VARCHAR(50) DEFAULT (UUID()),
+CREATE TABLE doctores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctor_id VARCHAR(50) DEFAULT uuid(),
     password VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    name VARCHAR(100) NOT NULL,
-    fecha_creacion DATE DEFAULT TIMESTAMP(NOW()),
-    status VARCHAR(50) NOT NULL,
-    imagen TEXT,
+    nombre_completo VARCHAR(100),
+    fecha_creacion DATE DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50),
+    imagen VARCHAR(500),
+    especializacion TEXT,
+    sexo VARCHAR(100),
+    telefono VARCHAR(15),
+    direccion VARCHAR(250),
+    fecha_modificacion DATE,
+    fecha_eliminacion DATE
 );
 
-CREATE TABLE citas(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    cita_id VARCHAR(50) NOT NULL UNIQUE DEFAULT(UUID()),
+CREATE TABLE pacientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    codigo VARCHAR(100) DEFAULT uuid(),
+    numero VARCHAR(15),
+    direccion TEXT,
+    imagen VARCHAR(500),
+    diagnostico TEXT,
+    tratamiento TEXT,
+    descripcion TEXT,
+    doctor VARCHAR(100),
+    fecha DATE DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion DATE,
+    fecha_eliminacion DATE,
+    estatus VARCHAR(100),
+    genero VARCHAR(50) NOT NULL,
+    estatus_pago VARCHAR(100)
+);
+
+CREATE TABLE citas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cita_id VARCHAR(50) DEFAULT uuid(),
     paciente_id BIGINT,
     name VARCHAR(100) NOT NULL,
     genero VARCHAR(50) NOT NULL,
-    descripcion TEXT NOT NULL,
-    diagnostico TEXT NOT NULL,
-    tratamiento TEXT NOT NULL,
+    descripcion TEXT,
+    diagnostico TEXT,
+    tratamiento TEXT,
     telefono VARCHAR(20),
     direccion VARCHAR(150),
-    fecha_creacion DATE DEFAULT NOW(),
+    fecha_creacion DATE DEFAULT CURRENT_TIMESTAMP,
     fecha_modificacion DATE,
     fecha_eliminacion DATE,
     estatus VARCHAR(50),
@@ -42,32 +70,12 @@ CREATE TABLE citas(
     calendario DATE
 );
 
-CREATE TABLE pacientes(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
-    codigo VARCHAR(100),
-    numero VARCHAR(15),
-    direccion TEXT,
-    imagen VARCHAR(500),
-    diagnostico TEXT,
-    tratamiento TEXT,
-    descipcion TEXT,
-    doctor VARCHAR(100)
-    fecha DATE,
-    fecha_modificacion DATE,
-    fecha_eliminacion DATE,
-    estatus VARCHAR(100),
-    genero VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE pagos(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    paciente_id VARCHAR(100) NOT NULL UNIQUE,
-    doctor_id VARCHAR(100) NOT NULL UNIQUE,
+CREATE TABLE pagos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    paciente_id VARCHAR(100) NOT NULL,
+    doctor_id VARCHAR(100) NOT NULL,
     total_dias INT NOT NULL,
-    precio_total INT NOT NULL,
+    precio_total DOUBLE NOT NULL,
     fecha_entrada DATE NOT NULL,
     fecha_verificacion DATE NOT NULL,
     fecha_pago DATE NOT NULL

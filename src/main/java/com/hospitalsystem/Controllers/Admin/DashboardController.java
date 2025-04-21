@@ -368,23 +368,50 @@ public class DashboardController implements Initializable {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    public void mostrarImagen(){
+    public void mostrarImagen() {
         String consulta = "SELECT * FROM admin WHERE id = ?;";
         try {
             connection = connectionDB();
             preparedStatement = connection.prepareStatement(consulta);
             preparedStatement.setInt(1, Data.admin_id);
             resultSet = preparedStatement.executeQuery();
+
             if (resultSet.next()) {
                 String imagenPath = resultSet.getString("imagen");
+
                 if (imagenPath != null && !imagenPath.trim().isEmpty()) {
                     String fullImagePath = "file:" + imagenPath.trim();
-                    image = new Image(fullImagePath, 1002, 20, false, true);
-                    top_profile.setFill(new ImagePattern(image));
-                    image = new Image(fullImagePath, 140, 125, false, true);
-                    profile_circle.setFill(new ImagePattern(image));
+
+                    try {
+                        Image topImg = new Image(fullImagePath, 1002, 20, false, true);
+                        if (!topImg.isError()) {
+                            top_profile.setFill(new ImagePattern(topImg));
+                        } else {
+                            top_profile.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                            System.err.println("⚠️ Error en imagen top_profile: " + fullImagePath);
+                        }
+
+                        Image profileImg = new Image(fullImagePath, 140, 125, false, true);
+                        if (!profileImg.isError()) {
+                            profile_circle.setFill(new ImagePattern(profileImg));
+                        } else {
+                            profile_circle.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                            System.err.println("⚠️ Error en imagen profile_circle: " + fullImagePath);
+                        }
+
+                    } catch (Exception ex) {
+                        System.err.println("❌ Excepción al cargar imagen: " + ex.getMessage());
+                        top_profile.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                        profile_circle.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                    }
+
+                } else {
+                    // Si no hay ruta → fondo plano
+                    top_profile.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                    profile_circle.setFill(javafx.scene.paint.Color.LIGHTGRAY);
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -397,6 +424,7 @@ public class DashboardController implements Initializable {
             }
         }
     }
+
 
     public void dashboardDA(){
         String consulta = "SELECT COUNT(id) FROM doctores WHERE status = ? && fecha_eliminacion IS NULL;";

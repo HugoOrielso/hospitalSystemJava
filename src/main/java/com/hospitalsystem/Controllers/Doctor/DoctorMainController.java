@@ -169,10 +169,6 @@ public class DoctorMainController implements Initializable {
 
     public void seleccionarCitaToPDF(){
 
-
-
-
-
         if (doctor_userName.isEmpty() || citas_tf_nombre.getText().isEmpty() || citas_tf_diagnostico.getText().isEmpty()
             || citas_tf_horario.getValue() == null || citas_tf_telefono.getText().isEmpty()
         ){
@@ -604,7 +600,8 @@ public class DoctorMainController implements Initializable {
             Path transfer = Paths.get(path);
 
 
-            Path copy = Paths.get("C:\\Users\\Usuario\\OneDrive\\Documentos\\Proyectos\\Java\\HospitalSystem\\src\\main\\java\\com\\hospitalsystem\\Directorio\\" + doctor_id + ".jpg");
+            String relativePath = "src/main/java/com/hospitalsystem/Directorio/" + doctor_id + ".jpg";
+            Path copy = Paths.get(System.getProperty("user.dir")).resolve(relativePath);
             try {
                 Files.copy(transfer, copy, StandardCopyOption.REPLACE_EXISTING);
             }catch (Exception e) {e.printStackTrace();}
@@ -695,27 +692,48 @@ public class DoctorMainController implements Initializable {
         }catch (Exception e) { e.printStackTrace(); }
     }
 
-    public void mostrarImagen(){
+    public void mostrarImagen() {
         String consulta = "SELECT * FROM doctores WHERE doctor_id = ?;";
         try {
             connection = connectionDB();
             preparedStatement = connection.prepareStatement(consulta);
             preparedStatement.setString(1, doctor_id);
             resultSet = preparedStatement.executeQuery();
+
             if (resultSet.next()) {
                 String imagenPath = resultSet.getString("imagen");
+
                 if (imagenPath != null && !imagenPath.trim().isEmpty()) {
                     String fullImagePath = "file:" + imagenPath.trim();
 
-                    // Configuración de la imagen para top_profile
-                    imagen = new Image(fullImagePath, 1002, 20, false, true);
-                    top_profile.setFill(new ImagePattern(imagen));
+                    try {
+                        Image topImg = new Image(fullImagePath, 1002, 20, false, true);
+                        if (!topImg.isError()) {
+                            top_profile.setFill(new ImagePattern(topImg));
+                        } else {
+                            top_profile.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                        }
 
-                    // Configuración de la imagen para profile_circle_image
-                    imagen = new Image(fullImagePath, 139, 101, false, true);
-                    profile_circle_image.setFill(new ImagePattern(imagen));
+                        Image profileImg = new Image(fullImagePath, 139, 101, false, true);
+                        if (!profileImg.isError()) {
+                            profile_circle_image.setFill(new ImagePattern(profileImg));
+                        } else {
+                            profile_circle_image.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                        }
+
+                    } catch (Exception imgEx) {
+                        System.err.println("❌ Error al cargar imagen: " + fullImagePath);
+                        top_profile.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                        profile_circle_image.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                    }
+
+                } else {
+                    // Imagen vacía → color por defecto
+                    top_profile.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                    profile_circle_image.setFill(javafx.scene.paint.Color.LIGHTGRAY);
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -728,6 +746,7 @@ public class DoctorMainController implements Initializable {
             }
         }
     }
+
 
     public void listaEstatus(){
         List<String> listaEstatus = new ArrayList<>();

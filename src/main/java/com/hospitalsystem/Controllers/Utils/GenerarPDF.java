@@ -4,17 +4,15 @@ import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Tab;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.util.Date;
 
 public class GenerarPDF {
@@ -22,79 +20,87 @@ public class GenerarPDF {
     private static AlertMessage alertMessage = new AlertMessage();
 
     public static void generatePDF(String doctor, String paciente, String diagnostico, String fecha, String telefono, String uuid) {
-        String pdfPath = "./src/main/java/com/hospitalsystem/Directorio/PDFS/cita-" + uuid  + ".pdf";
+        // Carpeta de salida
+        String outputFolder = "src/main/java/com/hospitalsystem/Directorio/PDFS/";
+        String pdfPath = outputFolder + "cita-" + uuid + ".pdf";
+
+        // Ruta del logo (ajustada para desarrollo local)
         String imagePath = "./src/main/resources/Imagenes/logo.jpg";
 
         try {
+            // Crear carpeta si no existe
+            File folder = new File(outputFolder);
+            if (!folder.exists()) folder.mkdirs();
 
+            // Verificar imagen antes de intentar usarla
+            File logoFile = new File(imagePath);
+            if (!logoFile.exists()) {
+                alertMessage.errorMessage("Logo no encontrado en: " + logoFile.getAbsolutePath());
+                return;
+            }
+
+            // Crear el PDF
             PdfWriter writer = new PdfWriter(pdfPath);
             PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf, PageSize.LETTER); // Tamaño carta
-            PdfPage page = pdf.addNewPage(PageSize.LETTER);
-            Date fechaHoy = new Date(new Date().getTime() + 3600 * 24 * 1000 );
-            int widthImagen = 50;
-            int heightImagen = 50;
+            Document document = new Document(pdf, PageSize.LETTER);
 
+            // Fecha +1 día
+            Date fechaHoy = new Date(new Date().getTime() + 3600 * 24 * 1000);
+
+            // Logo
             ImageData logoHospital = ImageDataFactory.create(imagePath);
-            Image imagen = new Image(logoHospital);
-            document.add(new Paragraph("Nueva cita").setTextAlignment(TextAlignment.CENTER).setHorizontalAlignment(HorizontalAlignment.CENTER).setBold().setFontSize(15));
+            Image imagen = new Image(logoHospital)
+                    .setWidth(50)
+                    .setHeight(50)
+                    .setFixedPosition(1, PageSize.LETTER.getWidth() - 90, PageSize.LETTER.getHeight() - 70);
 
-            imagen.setWidth(widthImagen);
-            imagen.setHeight(heightImagen);
+            // Título
+            document.add(new Paragraph("Nueva cita")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                    .setBold()
+                    .setFontSize(15));
 
-            float x = PageSize.LETTER.getWidth() - 90;
-            float y = PageSize.LETTER.getHeight() - 70;
-
-            imagen.setFixedPosition(1, x, y);
-            Paragraph diagnosticoParrafo = new Paragraph("Diagnóstico: " + diagnostico + ".");
-            Paragraph telefonoParrafo = new Paragraph("Telefono de contacto: " + telefono + ".");
-            Paragraph pacienteParrafo = new Paragraph("Paciente: ").add(paciente);
-
+            // Separador
             LineSeparator ls = new LineSeparator(new com.itextpdf.kernel.pdf.canvas.draw.SolidLine());
-
-            Paragraph paragraph3 = new Paragraph("Mediante el presente documento el doctor " + doctor
-                    + " hace constancia que el paciente " + paciente + " con diagnóstico de " + diagnostico
-                    + " tiene cita programada para el día " + fecha)
-                    .setTextAlignment(TextAlignment.LEFT);
-
             document.add(new Paragraph("\n\n"));
             document.add(ls);
-            document.add(paragraph3);
+
+            // Cuerpo
+            document.add(new Paragraph("Mediante el presente documento el doctor " + doctor
+                    + " hace constancia que el paciente " + paciente + " con diagnóstico de " + diagnostico
+                    + " tiene cita programada para el día " + fecha));
             document.add(new Paragraph("\n\n"));
 
+            // Datos específicos
             document.add(new Paragraph("Datos específicos").setBold().setFontSize(15).setTextAlignment(TextAlignment.CENTER));
-            document.add(pacienteParrafo);
-            document.add(diagnosticoParrafo);
-            document.add(telefonoParrafo);
+            document.add(new Paragraph("Paciente: ").add(paciente));
+            document.add(new Paragraph("Diagnóstico: " + diagnostico));
+            document.add(new Paragraph("Teléfono de contacto: " + telefono));
             document.add(imagen);
             document.add(ls);
 
+            // Observaciones
             document.add(new Paragraph("\n\n"));
             document.add(new Paragraph("Observaciones: ").setBold().setFontSize(15));
             document.add(new Paragraph("Tenga en cuenta estar 20 minutos antes, traer el documento de identificación y exámenes si son requeridos."));
 
-            PdfPage lastPage = pdf.getLastPage();
-            float bottomMargin = 50;
-            float rightMargin = 50;
-            float textWidth = 200;
-            float leftMargin = 50;
-
-            Paragraph fechaHoyString = new Paragraph(fechaHoy.toString())
+            // Footer (firma y fecha)
+            document.add(new Paragraph(fechaHoy.toString())
                     .setTextAlignment(TextAlignment.RIGHT)
-                    .setFixedPosition(lastPage.getPageSize().getWidth() - rightMargin - textWidth, bottomMargin, textWidth);
-            document.add(fechaHoyString);
-
-            Paragraph firmaDoctor = new Paragraph("Firma doctor")
+                    .setFixedPosition(pdf.getLastPage().getPageSize().getWidth() - 250, 50, 200));
+            document.add(new Paragraph("Firma doctor")
                     .setTextAlignment(TextAlignment.LEFT)
-                    .setFixedPosition(leftMargin, bottomMargin, textWidth);
-            document.add(firmaDoctor);
+                    .setFixedPosition(50, 50, 200));
 
             document.close();
-            alertMessage.confirmationMessage("Documento generado correctamente, consulta tus documentos.");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
+            System.out.println("✅ PDF generado correctamente en: " + new File(pdfPath).getAbsolutePath());
+            alertMessage.confirmationMessage("Documento generado correctamente, consulta la carpeta PDFS.");
+
         } catch (Exception e) {
             e.printStackTrace();
+            alertMessage.errorMessage("Error generando PDF: " + e.getMessage());
         }
     }
 }
